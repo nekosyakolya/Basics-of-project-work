@@ -25,10 +25,25 @@ void PrintCurrentState(const float G, const float time, const float v0)
 	return;
 }
 
-int main(int, char *[])
+void DisplayStates(const float G, const float timeReachMaxHeight)
 {
-	const float G = 9.8f;
-	float timeReachMaxHeight;
+	printf("Time point when height is at maximum = %f\n", timeReachMaxHeight);
+	bool flag = false;
+	for (float currTime = 0; currTime < timeReachMaxHeight * 2; currTime += 0.1f)
+	{
+		float v0 = G * timeReachMaxHeight;
+		if (currTime > timeReachMaxHeight && !flag)
+		{
+			flag = true;
+			PrintCurrentState(G, timeReachMaxHeight, v0);
+		}
+		PrintCurrentState(G, currTime, v0);
+	}
+	return;
+}
+
+int GetHeightJump()
+{
 	int heightJump;
 	do
 	{
@@ -38,34 +53,34 @@ int main(int, char *[])
 			printf("\n" "expected floating-point number" "\n");
 			exit(1);
 		}
-	    if (heightJump <= 0);
+		if (heightJump <= 0)
 		{
 			printf("error" "\n");
 		}
-	}
+	} 
 	while (heightJump <= 0);
-	
-	
-		timeReachMaxHeight = sqrt(heightJump * 2 / G);
-		printf("Time point when height is at maximum = %f\n", timeReachMaxHeight);
-		bool flag = false;
-		for (float currTime = 0; currTime < timeReachMaxHeight * 2; currTime += 0.1f)
-		{
-			float v0 = G * timeReachMaxHeight;
-			if (currTime > timeReachMaxHeight && !flag)
-			{
-				flag = true;
-				PrintCurrentState(G, timeReachMaxHeight, v0);
-			}
-			PrintCurrentState(G, currTime, v0);
-		}
+	return heightJump;
+}
 
-		float v0 = G * timeReachMaxHeight;
-		PrintCurrentState(G, timeReachMaxHeight * 2, v0);
-
-	
-	printf("Press any key... ");
+void Pause()
+{
+	printf("Press any key...\n");
 	_getch();
+	return;
+}
+
+int main(int, char *[])
+{
+	const float G = 9.8f;
+	float timeReachMaxHeight;
+	int heightJump = GetHeightJump();
+	
+	timeReachMaxHeight = sqrt(heightJump * 2 / G);
+	DisplayStates(G, timeReachMaxHeight);
+	
+	float v0 = G * timeReachMaxHeight;
+	PrintCurrentState(G, timeReachMaxHeight * 2, v0);
+	Pause();
 	return 0;
 }
 
