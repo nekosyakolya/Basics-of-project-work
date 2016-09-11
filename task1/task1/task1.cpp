@@ -1,4 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
 
 #include "stdafx.h"
 #include <conio.h>
@@ -15,46 +14,58 @@
 // TODO: Rename variables and split to several functions,
 // see also https://ps-group.github.io/sfml/coding_conventions.html
 // TODO: fix negative height values, fix heigh values higher than max height.
+
+void PrintCurrentState(const float G, const float time, const float v0)
+{
+	double currHeight = v0 * time - 0.5 * G * time * time;
+	if (currHeight >= 0)
+	{
+		printf("t=%f, s=%f\n", time, currHeight);
+	}
+	return;
+}
+
 int main(int, char *[])
 {
-	const float g = 9.8f;
+	const float G = 9.8f;
 	float timeReachMaxHeight;
 	int heightJump;
-	printf("Height jump: ");
-	if (scanf_s("%d", &heightJump) == 0)
+	do
 	{
-		printf("\n" "expected floating-point number" "\n");
-		exit(1);
-	}
-	// v(t) == v0 - g * t
-	// v0 = g * T
-	// s(t) == v0 * t - 0.5 * g * t * t
-	timeReachMaxHeight = sqrt(heightJump * 2 / g);
-	printf("Time point when height is at maximum =%f\n", timeReachMaxHeight);
-	bool flag = false;
-	for (float currTime = 0; currTime < timeReachMaxHeight * 2; currTime += 0.1f)
-	{
-		if (currTime > timeReachMaxHeight && !flag)
+		printf("Height jump: ");
+		if (scanf_s("%d", &heightJump) == 0)
 		{
-			flag = true;
-			float V0 = g * timeReachMaxHeight;
-			float currHeight = V0 * timeReachMaxHeight - 0.5 * g * timeReachMaxHeight * timeReachMaxHeight;
-			printf("t=%f, s=%f\n", timeReachMaxHeight, currHeight);
+			printf("\n" "expected floating-point number" "\n");
+			exit(1);
 		}
-		float V0 = g * timeReachMaxHeight;
-		float currHeight = V0 * currTime - 0.5 * g * currTime * currTime;
-		printf("t=%f, s=%f\n", currTime, currHeight);
+	    if (heightJump <= 0);
+		{
+			printf("error" "\n");
+		}
 	}
+	while (heightJump <= 0);
+	
+	
+		timeReachMaxHeight = sqrt(heightJump * 2 / G);
+		printf("Time point when height is at maximum = %f\n", timeReachMaxHeight);
+		bool flag = false;
+		for (float currTime = 0; currTime < timeReachMaxHeight * 2; currTime += 0.1f)
+		{
+			float v0 = G * timeReachMaxHeight;
+			if (currTime > timeReachMaxHeight && !flag)
+			{
+				flag = true;
+				PrintCurrentState(G, timeReachMaxHeight, v0);
+			}
+			PrintCurrentState(G, currTime, v0);
+		}
 
-	float V0 = g * timeReachMaxHeight;
-	float currHeight = V0 * (timeReachMaxHeight * 2) - 0.5 * g * (timeReachMaxHeight * 2) * (timeReachMaxHeight * 2);
-	printf("t=%f, s=%f\n", timeReachMaxHeight * 2, currHeight);
+		float v0 = G * timeReachMaxHeight;
+		PrintCurrentState(G, timeReachMaxHeight * 2, v0);
 
-	// TODO: remove system("pause") and never use it again.
-	//system("pause");
+	
 	printf("Press any key... ");
 	_getch();
-
 	return 0;
 }
 
