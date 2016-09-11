@@ -1,5 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
+#include "stdafx.h"
+#include <conio.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -16,44 +18,42 @@
 int main(int, char *[])
 {
 	const float g = 9.8f;
-	float T;
-	float Vn;
-	int S;
-	int M;
-	printf("S: ");
-	if (0 == scanf("%d", &S))
+	float timeReachMaxHeight;
+	int heightJump;
+	printf("Height jump: ");
+	if (scanf_s("%d", &heightJump) == 0)
 	{
 		printf("\n" "expected floating-point number" "\n");
 		exit(1);
 	}
-	// T - time point when height is at maximum.
-	// t - current time point
 	// v(t) == v0 - g * t
 	// v0 = g * T
 	// s(t) == v0 * t - 0.5 * g * t * t
-	T = sqrt(S * 2 / g);
-	printf("T=%f\n", T);
+	timeReachMaxHeight = sqrt(heightJump * 2 / g);
+	printf("Time point when height is at maximum =%f\n", timeReachMaxHeight);
 	bool flag = false;
-	for (float t = 0; t < T * 2; t += 0.1f)
+	for (float currTime = 0; currTime < timeReachMaxHeight * 2; currTime += 0.1f)
 	{
-		if (t > T && !flag)
+		if (currTime > timeReachMaxHeight && !flag)
 		{
 			flag = true;
-			float V0 = g * T;
-			float s = V0 * T - 0.5 * g * T * T;
-			printf("t=%f, s=%f\n", T, s);
+			float V0 = g * timeReachMaxHeight;
+			float currHeight = V0 * timeReachMaxHeight - 0.5 * g * timeReachMaxHeight * timeReachMaxHeight;
+			printf("t=%f, s=%f\n", timeReachMaxHeight, currHeight);
 		}
-		float V0 = g * T;
-		float s = V0 * t - 0.5 * g * t * t;
-		printf("t=%f, s=%f\n", t, s);
+		float V0 = g * timeReachMaxHeight;
+		float currHeight = V0 * currTime - 0.5 * g * currTime * currTime;
+		printf("t=%f, s=%f\n", currTime, currHeight);
 	}
 
-	float V0 = g * T;
-	float s = V0 * (T * 2) - 0.5 * g * (T * 2) * (T * 2);
-	printf("t=%f, s=%f\n", T * 2, s);
+	float V0 = g * timeReachMaxHeight;
+	float currHeight = V0 * (timeReachMaxHeight * 2) - 0.5 * g * (timeReachMaxHeight * 2) * (timeReachMaxHeight * 2);
+	printf("t=%f, s=%f\n", timeReachMaxHeight * 2, currHeight);
 
 	// TODO: remove system("pause") and never use it again.
-	system("pause");
+	//system("pause");
+	printf("Press any key... ");
+	_getch();
 
 	return 0;
 }

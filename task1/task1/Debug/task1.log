@@ -1,0 +1,9 @@
+﻿  task1.cpp
+d:\basics-of-project-work\task1\task1\task1.cpp(1): warning C4603: _CRT_SECURE_NO_WARNINGS: макрос не определен или определение изменилось после использования предкомпилированного заголовка
+  d:\basics-of-project-work\task1\task1\task1.cpp(1): note: Добавление макроопределения в предкомпилированный заголовок вместо определения его здесь
+  d:\basics-of-project-work\task1\task1\task1.cpp(3): note: использование предварительно скомпилированного заголовка
+d:\basics-of-project-work\task1\task1\task1.cpp(41): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+d:\basics-of-project-work\task1\task1\task1.cpp(45): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+d:\basics-of-project-work\task1\task1\task1.cpp(50): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+  task1.vcxproj -> D:\Basics-of-project-work\task1\Debug\task1.exe
+  task1.vcxproj -> D:\Basics-of-project-work\task1\Debug\task1.pdb (Full PDB)
