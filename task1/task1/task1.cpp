@@ -17,19 +17,19 @@
 // see also https://ps-group.github.io/sfml/coding_conventions.html
 // TODO: fix negative height values, fix heigh values higher than max height.
 
-void PrintCurrentState(const float G, const float time, const float v0)
+using namespace std;
+
+void PrintCurrentState(const float &G, const float &time, const float &v0)
 {
 	double currHeight = v0 * time - 0.5 * G * time * time;
 	if (currHeight >= 0)
 	{
-		using namespace std;
 		cout << "t=" << fixed << setprecision(6) << time << ", h=" << fixed << setprecision(6) << currHeight << "\n";
 	}
 }
 
-void DisplayStates(const float G, const float timeReachMaxHeight)
+void DisplayStates(const float &G, const float &timeReachMaxHeight)
 {
-	using namespace std;
 	cout << "Time point when height is at maximum = " << fixed << setprecision(6) << timeReachMaxHeight << "\n";
 	bool flag = false;
 	for (float currTime = 0; currTime < timeReachMaxHeight * 2; currTime += 0.1f)
@@ -49,15 +49,17 @@ int GetHeightJump()
 	int heightJump;
 	do
 	{
-		std::cout << "Height jump: ";
-		if (scanf_s("%d", &heightJump) == 0)
+		cout << "Height jump: ";
+		cin >> heightJump;
+		cin.clear();
+		if (cin.get() != '\n')
 		{
-			std::cout << "expected floating-point number \n";
+			cout << "expected floating-point number \n";
 			exit(1);
 		}
 		if ((heightJump <= 0) || (heightJump > INT_MAX))
 		{
-			std::cout << "error!\n";
+			cout << "error!\n";
 		}
 	} 
 	while ((heightJump <= 0) || (heightJump > INT_MAX));
@@ -66,7 +68,7 @@ int GetHeightJump()
 
 void Pause()
 {
-	std::cout << "Press any key...\n";
+	cout << "Press any key...\n";
 	_getch();
 }
 
