@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <iomanip>
 
 // This program takes max jump height from input and prints
 // jump height for every time point with step 0.1 seconds.
@@ -20,14 +21,15 @@ void PrintCurrentState(const float G, const float time, const float v0)
 	double currHeight = v0 * time - 0.5 * G * time * time;
 	if (currHeight >= 0)
 	{
-		printf("t=%f, s=%f\n", time, currHeight);
+		using namespace std;
+		cout << "t=" << fixed << setprecision(6) << time << ", h=" << fixed << setprecision(6) << currHeight << "\n";
 	}
-	return;
 }
 
 void DisplayStates(const float G, const float timeReachMaxHeight)
 {
-	printf("Time point when height is at maximum = %f\n", timeReachMaxHeight);
+	using namespace std;
+	cout << "Time point when height is at maximum = " << fixed << setprecision(6) << timeReachMaxHeight << "\n";
 	bool flag = false;
 	for (float currTime = 0; currTime < timeReachMaxHeight * 2; currTime += 0.1f)
 	{
@@ -39,7 +41,6 @@ void DisplayStates(const float G, const float timeReachMaxHeight)
 		}
 		PrintCurrentState(G, currTime, v0);
 	}
-	return;
 }
 
 int GetHeightJump()
@@ -47,15 +48,15 @@ int GetHeightJump()
 	int heightJump;
 	do
 	{
-		printf("Height jump: ");
+		std::cout << "Height jump: ";
 		if (scanf_s("%d", &heightJump) == 0)
 		{
-			printf("\n" "expected floating-point number" "\n");
+			std::cout << "expected floating-point number \n";
 			exit(1);
 		}
 		if (heightJump <= 0)
 		{
-			printf("error" "\n");
+			std::cout << "error!\n";
 		}
 	} 
 	while (heightJump <= 0);
@@ -64,12 +65,11 @@ int GetHeightJump()
 
 void Pause()
 {
-	printf("Press any key...\n");
+	std::cout << "Press any key...\n";
 	_getch();
-	return;
 }
 
-int main(int, char *[])
+int main()
 {
 	const float G = 9.8f;
 	float timeReachMaxHeight;
