@@ -6,6 +6,7 @@
 #include <vector>
 #include <cmath>
 #include <iomanip>
+#include <cfloat>
 
 // This program takes max jump height from input and prints
 // jump height for every time point with step 0.1 seconds.
@@ -54,12 +55,12 @@ int GetHeightJump()
 			std::cout << "expected floating-point number \n";
 			exit(1);
 		}
-		if (heightJump <= 0)
+		if ((heightJump <= 0) || (heightJump > INT_MAX))
 		{
 			std::cout << "error!\n";
 		}
 	} 
-	while (heightJump <= 0);
+	while ((heightJump <= 0) || (heightJump > INT_MAX));
 	return heightJump;
 }
 
