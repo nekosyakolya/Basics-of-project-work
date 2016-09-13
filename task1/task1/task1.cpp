@@ -16,9 +16,12 @@
 // TODO: Rename variables and split to several functions,
 // see also https://ps-group.github.io/sfml/coding_conventions.html
 // TODO: fix negative height values, fix heigh values higher than max height.
+void PrintCurrentState(const float &G, const float &time, const float &v0);
+void DisplayStates(const float &G, const float &timeReachMaxHeight);
+int GetHeightJump();
+void Pause();
 
 using namespace std;
-
 void PrintCurrentState(const float &G, const float &time, const float &v0)
 {
 	double currHeight = v0 * time - 0.5 * G * time * time;
