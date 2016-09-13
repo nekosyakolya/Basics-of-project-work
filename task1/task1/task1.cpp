@@ -19,7 +19,7 @@
 
 using namespace std;
 void PrintCurrentState(const float &time, const float &v0);
-void DisplayStates(const float &timeReachMaxHeight);
+void DisplayStates(const float &timeReachMaxHeight, const float &v0);
 int GetHeightJump();
 void Pause();
 
