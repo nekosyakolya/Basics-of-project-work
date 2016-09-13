@@ -48,7 +48,7 @@ void DisplayStates(const float &timeReachMaxHeight)
 bool IsValidityHeight(const int &heightJump)
 {
 	bool validityHeight;
-	((heightJump <= 0) || (heightJump > INT_MAX)) ? validityHeight = false : validityHeight = true;
+	((heightJump <= 0) || (heightJump > INT_MAX)) ? validityHeight = false : validityHeight =  true;
 	return validityHeight;
 }
 
