@@ -33,13 +33,12 @@ void PrintCurrentState(const float &time, const float &v0)
 	}
 }
 
-void DisplayStates(const float &timeReachMaxHeight)
+void DisplayStates(const float &timeReachMaxHeight, const float &v0)
 {
 	cout << "Time point when height is at maximum = " << fixed << setprecision(6) << timeReachMaxHeight << "\n";
 	bool printMaxState = false;
 	for (float currTime = 0; currTime < timeReachMaxHeight * 2; currTime += 0.1f)
 	{
-		float v0 = G * timeReachMaxHeight;
 		if (currTime > timeReachMaxHeight && !printMaxState)
 		{
 			printMaxState = true;
@@ -83,9 +82,9 @@ int main()
 	int heightJump = GetHeightJump();
 	
 	timeReachMaxHeight = sqrt(heightJump * 2 / G);
-	DisplayStates(timeReachMaxHeight);
-	
 	float v0 = G * timeReachMaxHeight;
+	DisplayStates(timeReachMaxHeight, v0);
+	
 	PrintCurrentState(timeReachMaxHeight * 2, v0);
 	Pause();
 	return 0;
