@@ -3,7 +3,6 @@
 #include <conio.h>
 #include <iostream>
 #include <string>
-#include <vector>
 #include <cmath>
 #include <iomanip>
 #include <cfloat>
@@ -12,14 +11,10 @@
 // This program takes max jump height from input and prints
 // jump height for every time point with step 0.1 seconds.
 // Program should print all time points when height is min and max.
-// TODO: Fix all warnings on high warning level (/W4, -Wall -Wextra).
-// TODO: Rename variables and split to several functions,
-// see also https://ps-group.github.io/sfml/coding_conventions.html
-// TODO: fix negative height values, fix heigh values higher than max height.
 
 using namespace std;
 void PrintCurrentState(const float &time, const float &v0);
-void DisplayStates(const float &timeReachMaxHeight, const float &v0);
+void DisplayStates(const float &timeReachMaxHeigh);
 int GetHeightJump();
 void Pause();
 
@@ -33,10 +28,11 @@ void PrintCurrentState(const float &time, const float &v0)
 	}
 }
 
-void DisplayStates(const float &timeReachMaxHeight, const float &v0)
+void DisplayStates(const float &timeReachMaxHeight)
 {
 	cout << "Time point when height is at maximum = " << fixed << setprecision(6) << timeReachMaxHeight << "\n";
 	bool printMaxState = false;
+	float v0 = G * timeReachMaxHeight;
 	for (float currTime = 0; currTime < timeReachMaxHeight * 2; currTime += 0.1f)
 	{
 		if (currTime > timeReachMaxHeight && !printMaxState)
@@ -46,6 +42,7 @@ void DisplayStates(const float &timeReachMaxHeight, const float &v0)
 		}
 		PrintCurrentState(currTime, v0);
 	}
+	PrintCurrentState(timeReachMaxHeight * 2, v0);
 }
 
 int GetHeightJump()
@@ -78,14 +75,10 @@ void Pause()
 
 int main()
 {
-	float timeReachMaxHeight;
 	int heightJump = GetHeightJump();
-	
-	timeReachMaxHeight = sqrt(heightJump * 2 / G);
-	float v0 = G * timeReachMaxHeight;
-	DisplayStates(timeReachMaxHeight, v0);
-	
-	PrintCurrentState(timeReachMaxHeight * 2, v0);
+	float timeReachMaxHeight = sqrt(heightJump * 2 / G);
+
+	DisplayStates(timeReachMaxHeight);
 	Pause();
 	return 0;
 }
