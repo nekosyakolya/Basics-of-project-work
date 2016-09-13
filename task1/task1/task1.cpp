@@ -14,10 +14,10 @@
 
 using namespace std;
 void PrintCurrentState(const float &time, const float &v0);
-void DisplayStates(const float &timeReachMaxHeigh);
+void DisplayStates(const float &timeReachMaxHeight);
 int GetHeightJump();
 void Pause();
-
+bool IsValidityHeight(const int &heightJump);
 
 void PrintCurrentState(const float &time, const float &v0)
 {
@@ -45,6 +45,13 @@ void DisplayStates(const float &timeReachMaxHeight)
 	PrintCurrentState(timeReachMaxHeight * 2, v0);
 }
 
+bool IsValidityHeight(const int &heightJump)
+{
+	bool validityHeight;
+	((heightJump <= 0) || (heightJump > INT_MAX)) ? validityHeight = false : validityHeight =  true;
+	return validityHeight;
+}
+
 int GetHeightJump()
 {
 	int heightJump;
@@ -55,15 +62,15 @@ int GetHeightJump()
 		cin.clear();
 		if (cin.get() != '\n')
 		{
-			cout << "expected floating-point number \n";
+			cout << "entered is not a number\n";
 			exit(1);
 		}
-		if ((heightJump <= 0) || (heightJump > INT_MAX))
+		if (!IsValidityHeight(heightJump))
 		{
-			cout << "error!\n";
+			cout << "error!enter a positive number\n";
 		}
 	} 
-	while ((heightJump <= 0) || (heightJump > INT_MAX));
+	while (!IsValidityHeight(heightJump));
 	return heightJump;
 }
 
