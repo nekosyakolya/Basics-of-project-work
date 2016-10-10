@@ -1,9 +1,5 @@
 #include "stdafx.h"
 #include <ctime>
-#include <string>
-#include <sstream>
-#define _USE_MATH_DEFINES
-#include <math.h>
 #include "consts.h"
 #include "clockSystem.h"
 
