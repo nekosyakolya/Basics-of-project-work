@@ -1,4 +1,3 @@
-
 #include "stdafx.h"
 #include <conio.h>
 #include <iostream>
@@ -6,18 +5,20 @@
 #include <cmath>
 #include <iomanip>
 #include <cfloat>
-#define G 9.8f
+
 
 // This program takes max jump height from input and prints
 // jump height for every time point with step 0.1 seconds.
 // Program should print all time points when height is min and max.
 
 using namespace std;
-void PrintCurrentState(const float &time, const float &v0);
-void DisplayStates(const float &timeReachMaxHeight);
+
+static const float G = 9.8f;
+
+void PrintCurrentState(const float &, const float &);
+void DisplayStates(const float &);
 int GetHeightJump();
-void Pause();
-bool IsValidityHeight(const int &heightJump);
+bool IsValidHeight(int);
 
 void PrintCurrentState(const float &time, const float &v0)
 {
@@ -31,13 +32,13 @@ void PrintCurrentState(const float &time, const float &v0)
 void DisplayStates(const float &timeReachMaxHeight)
 {
 	cout << "Time point when height is at maximum = " << fixed << setprecision(6) << timeReachMaxHeight << "\n";
-	bool printMaxState = false;
+	bool printedMaxState = false;
 	float v0 = G * timeReachMaxHeight;
 	for (float currTime = 0; currTime < timeReachMaxHeight * 2; currTime += 0.1f)
 	{
-		if (currTime > timeReachMaxHeight && !printMaxState)
+		if (currTime > timeReachMaxHeight && !printedMaxState)
 		{
-			printMaxState = true;
+			printedMaxState = true;
 			PrintCurrentState(timeReachMaxHeight, v0);
 		}
 		PrintCurrentState(currTime, v0);
@@ -45,11 +46,9 @@ void DisplayStates(const float &timeReachMaxHeight)
 	PrintCurrentState(timeReachMaxHeight * 2, v0);
 }
 
-bool IsValidityHeight(const int &heightJump)
-{
-	bool validityHeight;
-	((heightJump <= 0) || (heightJump > INT_MAX)) ? validityHeight = false : validityHeight = true;
-	return validityHeight;
+bool IsValidHeight(int heightJump)
+{ 
+	return ((heightJump >= 0) && (heightJump < INT_MAX));
 }
 
 int GetHeightJump()
@@ -63,21 +62,15 @@ int GetHeightJump()
 		if (cin.get() != '\n')
 		{
 			cout << "entered is not a number\n";
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
-		if (!IsValidityHeight(heightJump))
+		if (!IsValidHeight(heightJump))
 		{
 			cout << "error!enter a positive number\n";
 		}
 	} 
-	while (!IsValidityHeight(heightJump));
+	while (!IsValidHeight(heightJump));
 	return heightJump;
-}
-
-void Pause()
-{
-	cout << "Press any key...\n";
-	_getch();
 }
 
 int main()
@@ -86,7 +79,6 @@ int main()
 	float timeReachMaxHeight = sqrt(heightJump * 2 / G);
 
 	DisplayStates(timeReachMaxHeight);
-	Pause();
-	return 0;
+	return EXIT_SUCCESS;
 }
 
