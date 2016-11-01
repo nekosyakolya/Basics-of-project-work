@@ -58,7 +58,7 @@ void ChangeCharacteristicsDot(int i, CircleShape dot[NUMBER_DOTS], const Vector2
 
 void CreateClockFace(const Vector2f &windowCenter, ClockSystem &clock)
 {
-	float angle = -1.0472f;
+	float angle = float(M_PI / (-3));
 	const float RADIUS_BIG_DOT = 7;
 
 	for (int i = 0; i < NUMBER_DOTS; ++i)
