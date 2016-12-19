@@ -31,20 +31,26 @@ struct Layer
 class Level
 {
 public:
-	bool LoadFromFile(std::string filename);
-	Object GetObject(std::string name);
-	std::vector<Object> GetObjects(std::string name);
-	std::vector<Object> GetAllObjects();
-	void Draw(sf::RenderWindow &window);
-	sf::Vector2i GetTileSize();
+
+	bool LoadFromFile(const std::string &filepath);
+
+	Object GetObject(const std::string &name)const;
+	std::vector<Object> GetObjects(const std::string &name)const;
+
+	std::vector<Object> GetAllObjects()const;
+	sf::Vector2i GetTileSize()const;
+
+	void Draw(sf::RenderTarget &target)const;
 
 private:
-	int width, height, tileWidth, tileHeight;
-	int firstTileID;
-	sf::FloatRect drawingBounds;
-	sf::Texture tilesetImage;
-	std::vector<Object> objects;
-	std::vector<Layer> layers;
+	int m_width = 0;
+	int m_height = 0;
+	int m_tileWidth = 0;
+	int m_tileHeight = 0;
+	int m_firstTileID = 0;
+	sf::Texture m_tilesetImage;
+	std::vector<Object> m_objects;
+	std::vector<Layer> m_layers;
 };
 
 

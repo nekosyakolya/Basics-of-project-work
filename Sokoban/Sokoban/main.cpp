@@ -25,47 +25,222 @@ void HandleEvents(RenderWindow &window)
 	}
 }
 
-
-/*
-
-
-void EnterGameLoop(RenderWindow &window, Level &level)
+void Display(RenderWindow &window, Level &level, std::vector<Box*> &boxes, Player & player, float time)
 {
-	while (window.isOpen())
+	player.Update(time);
+	bool isCollision;
+	for (size_t i = 0; i < boxes.size(); ++i)
 	{
-		HandleEvents(window);
-		if (Keyboard::isKeyPressed(Keyboard::Left))
-		{ 
-			herosprite.move(-0.1, 0); 
-			herosprite.setTextureRect(IntRect(0, 66, 96, 56)); 
+		isCollision = false;
+		if (player.GetRect().intersects(boxes[i]->sprite.getGlobalBounds()) && player.offset.x < 0)
+		{
+			boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x - 58, boxes[i]->sprite.getPosition().y);
+
+			for (size_t j = 0; j < boxes.size(); ++j)
+			{
+				if (boxes[i]->sprite.getPosition() == boxes[j]->sprite.getPosition() && (i != j))
+				{
+					player.position.x -= player.offset.x * time;
+					boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x + 58, boxes[i]->sprite.getPosition().y);
+					isCollision = true;
+				}
+			}
+
+			for (size_t j = 0; j < player.obj.size(); ++j)
+			{
+				
+				if ((player.obj[j].rect.intersects((*boxes[i]).sprite.getGlobalBounds())) && (player.obj[j].name == "collision"))
+				{
+					player.position.x -= player.offset.x * time;
+					boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x + 58, boxes[i]->sprite.getPosition().y);
+					isCollision = true;
+					break;//похоже на костыль
+				}
+
+				if ((player.obj[j].rect.intersects((*boxes[i]).sprite.getGlobalBounds())) && (player.obj[j].name == "goal"))
+				{
+
+					if (!boxes[i]->isStateFinal)
+					{
+						boxes[i]->isStateFinal = true;
+					}
+
+					isCollision = true;
+				}
+			}
+			if (!isCollision && boxes[i]->isStateFinal)
+			{
+				boxes[i]->isStateFinal = false;
+			}
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Right)) { herosprite.move(0.1, 0); herosprite.setTextureRect(IntRect(0, 132, 96, 56)); } //координата Y, на которой герой изображен идущем вправо равна 96+96=192
-		if (Keyboard::isKeyPressed(Keyboard::Up)) { herosprite.move(0, -0.1); herosprite.setTextureRect(IntRect(0, 188, 96, 66)); } //координата Y на которой герой изображен идущим вверх равна 288
-		if (Keyboard::isKeyPressed(Keyboard::Down)) { herosprite.move(0, 0.1); herosprite.setTextureRect(IntRect(0, 0, 96, 66)); }
+
+
+		if (player.GetRect().intersects(boxes[i]->sprite.getGlobalBounds()) && player.offset.x > 0)
+		{
+			boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x + 58, boxes[i]->sprite.getPosition().y);
+			for (size_t j = 0; j < boxes.size(); ++j)
+			{
+				if (boxes[i]->sprite.getPosition() == boxes[j]->sprite.getPosition() && (i != j))
+				{
+					player.position.x -= player.offset.x * time;
+					boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x - 58, boxes[i]->sprite.getPosition().y);
+					isCollision = true;
+				}
+			}
+			for (size_t j = 0; j < player.obj.size(); ++j)
+			{
+
+				if ((player.obj[j].rect.intersects((*boxes[i]).sprite.getGlobalBounds())) && (player.obj[j].name == "collision"))
+				{
+					player.position.x -= player.offset.x * time;
+					boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x - 58, boxes[i]->sprite.getPosition().y);
+					isCollision = true;
+					break;//похоже на костыль
+				}
+
+
+				if ((player.obj[j].rect.intersects((*boxes[i]).sprite.getGlobalBounds())) && (player.obj[j].name == "goal"))
+				{
+
+					if (!boxes[i]->isStateFinal)
+					{
+						boxes[i]->isStateFinal = true;
+					}
+
+					isCollision = true;
+				}
+			}
+			if (!isCollision && boxes[i]->isStateFinal)
+			{
+				boxes[i]->isStateFinal = false;
+			}
+		}
+
+
+		if (player.GetRect().intersects(boxes[i]->sprite.getGlobalBounds()) && player.offset.y > 0)
+		{
+
+			boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x, boxes[i]->sprite.getPosition().y + 58);
+			for (size_t j = 0; j < boxes.size(); ++j)
+			{
+				if (boxes[i]->sprite.getPosition() == boxes[j]->sprite.getPosition() && (i != j))
+				{
+					player.position.y -= player.offset.y * time;
+					boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x, boxes[i]->sprite.getPosition().y - 58);
+					isCollision = true;
+				}
+			}
+			for (size_t j = 0; j < player.obj.size(); ++j)
+			{
+
+				if ((player.obj[j].rect.intersects((*boxes[i]).sprite.getGlobalBounds())) && (player.obj[j].name == "collision"))
+				{
+					
+					player.position.y -= player.offset.y * time;
+					boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x, boxes[i]->sprite.getPosition().y - 58);
+					isCollision = true;
+					break;//похоже на костыль
+				}
+
+				if ((player.obj[j].rect.intersects((*boxes[i]).sprite.getGlobalBounds())) && (player.obj[j].name == "goal"))
+				{
+
+					if (!boxes[i]->isStateFinal)
+					{
+						boxes[i]->isStateFinal = true;
+					}
+
+					isCollision = true;
+				}
+
+			}
+			if (!isCollision && boxes[i]->isStateFinal)
+			{
+				boxes[i]->isStateFinal = false;
+			}
+		}
+
+
+		if (player.GetRect().intersects(boxes[i]->sprite.getGlobalBounds()) && player.offset.y < 0)
+		{
+			boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x, boxes[i]->sprite.getPosition().y - 58);
+			for (size_t j = 0; j < boxes.size(); ++j)
+			{
+				if (boxes[i]->sprite.getPosition() == boxes[j]->sprite.getPosition() && (i != j))
+				{
+
+					player.position.y -= player.offset.y * time;
+					boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x, boxes[i]->sprite.getPosition().y + 58);
+					isCollision = true;
+				}
+			}
+			for (size_t j = 0; j < player.obj.size(); ++j)
+			{
+
+				if ((player.obj[j].rect.intersects((*boxes[i]).sprite.getGlobalBounds())) && (player.obj[j].name == "collision"))
+				{
+
+					isCollision = true;
+					player.position.y -= player.offset.y * time;
+					boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x, boxes[i]->sprite.getPosition().y + 58);
+					break;//похоже на костыль
+				}
+
+
+				if ((player.obj[j].rect.intersects((*boxes[i]).sprite.getGlobalBounds())) && (player.obj[j].name == "goal"))
+				{
+
+					if (!boxes[i]->isStateFinal)
+					{
+						boxes[i]->isStateFinal = true;
+					}
+
+					isCollision = true;
+				}
+			}
+
+			if (!isCollision && boxes[i]->isStateFinal)
+			{
+				boxes[i]->isStateFinal = false;
+			}
+		}
+		auto positionSprite = (boxes[i]->isStateFinal) ? Vector2f(0, 116) : Vector2f(0, 58);
+
+		boxes[i]->sprite.setTextureRect(IntRect(static_cast<int>(positionSprite.x), static_cast<int>(positionSprite.y), 58, 58));
+
 	}
-}
-*/
-
-
-void Display(RenderWindow &window, Level &level, std::vector<Box*> &boxes, Player & player)
-{
+	player.sprite.setPosition(player.position);
 	window.clear(Color::White);
 	level.Draw(window);
+	
+	size_t k = 0;
 	for (auto box : boxes)
 	{
-	window.draw(box->sprite);
+		window.draw(box->sprite);
+		if (box->isStateFinal)
+		{
+			++k;
+		}
+	}
+	if (k == boxes.size())
+	{
+		cout << "win"<< endl;
 	}
 	window.draw(player.sprite);
 	window.display();
 }
 
-void EnterGameLoop(RenderWindow &window, Level &level, std::vector<Box*> &boxes, Player & player)
+void EnterGameLoop(RenderWindow &window, Level &level, std::vector<Box*> &boxes, Player & player, Clock & clock)
 {
 	while (window.isOpen())
 	{
+
+		float time = clock.getElapsedTime().asMicroseconds(); //дать прошедшее время в микросекундах
+		clock.restart(); //перезагружает время
+		time = time / 800; //скорость игры
+
 		HandleEvents(window);
-		
-		Display(window, level, boxes, player);
+		Display(window, level, boxes, player, time);
 
 	}
 }
@@ -79,7 +254,7 @@ int main()
 	{
 		return EXIT_FAILURE;
 	}
-
+	Clock clock;
 	ContextSettings settings;
 	settings.antialiasingLevel = 8;
 
@@ -94,13 +269,13 @@ int main()
 	{
 		isFinal = (currBox.type == "boxFinal") ? true : false;
 		boxes.push_back(new Box(Vector2f(currBox.rect.left, currBox.rect.top), isFinal));
-		
 	}
 
 	Object hero = level.GetObject("player");
 	Player player(Vector2f(hero.rect.left, hero.rect.top));
+	player.InitPlayer(level);
 
-	EnterGameLoop(window, level, boxes, player);
+	EnterGameLoop(window, level, boxes, player, clock);
 	return EXIT_SUCCESS;
 }
 
