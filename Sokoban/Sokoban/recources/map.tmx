@@ -3620,7 +3620,7 @@
   <object id="41" name="goal" x="232" y="116" width="116" height="58"/>
  </objectgroup>
  <objectgroup name="player">
-  <object id="44" name="player" x="232" y="58" width="36" height="58"/>
+  <object id="44" name="player" x="232" y="58" width="58" height="58"/>
  </objectgroup>
  <objectgroup name="box">
   <object id="48" name="box" type="boxFinal" x="232" y="116" width="58" height="58"/>
