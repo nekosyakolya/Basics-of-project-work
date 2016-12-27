@@ -45,20 +45,17 @@ void CPlayer::Update(float time)
 	{
 	case Direction::RIGHT:
 		m_offset.x = 0.1;
-		m_offset.y = -0.1;
 		break;
 	case Direction::LEFT:
 		m_offset.x = -0.1;
-		m_offset.y = -0.1;
 		break;
 	case Direction::UP:
-		m_offset.y = -0.1;
 		m_offset.x = 0;
 		break;
 	default:
 		break;
 	}
-
+	m_offset.y = -0.1;
 	m_position.x += m_offset.x * time;
 	CheckCollision(m_offset.x, 0);
 

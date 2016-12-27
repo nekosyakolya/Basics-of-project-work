@@ -19,6 +19,7 @@ public:
 	void Update(float time);
 	void CheckCollision(float dx, float dy);
 	void InitPlayer(Level &level);
+	sf::FloatRect GetRect();
 	~CPlayer();
 private:
 	sf::RectangleShape m_object;
@@ -26,6 +27,5 @@ private:
 	sf::Vector2f m_offset;
 	Direction m_direction;
 	std::vector<Object> m_obj;
-	sf::FloatRect GetRect();
 };
 

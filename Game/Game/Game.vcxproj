@@ -152,6 +152,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bonus.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="stdafx.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="tinyxml.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="bonus.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="level.cpp" />
     <ClCompile Include="player.cpp" />
