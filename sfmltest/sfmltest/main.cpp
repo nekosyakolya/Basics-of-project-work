@@ -22,7 +22,7 @@ void DisplayClockFace(RenderWindow &window, Text num[NUMBER_DIGITS], CircleShape
 
 void TurnHands(ClockHands &clockHands)
 {
-	time_t currentTime = time(NULL);
+	time_t currentTime = time(nullptr);
 	struct tm * ptm = localtime(&currentTime);
 
 	clockHands.hourHand.setRotation(float(ptm->tm_hour * 30) + (float(ptm->tm_min / 2)));
