@@ -91,6 +91,11 @@ void Display(RenderWindow &window, CPlayer &player, View &view, Level & level, s
 	for (auto enemy : enemies)
 	{
 		window.draw(enemy->GetHero());
+
+		if (enemy->IsJump())
+		{
+			window.draw(enemy->GetRectProtection());
+		}
 	}
 
 	window.draw(player.GetHero());
@@ -151,6 +156,40 @@ void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vec
 			{
 				delete bonuses[i];
 				bonuses.erase(bonuses.begin() + i);
+			}
+		}
+
+
+		for (auto cat : cats)
+		{
+
+			if ((enemy->GetRect().intersects(cat->GetRectBonus()) && cat->IsShow()) || enemy->GetRect().intersects(cat->GetRect()))
+			{
+				//рисуем парашют у врага
+				enemy->SetProtection();
+			}
+
+
+		}
+
+
+		for (auto cat : blackCats)
+		{
+			if ((enemy->GetRect().intersects(cat->GetRectBonus()) && cat->IsShow()) || enemy->GetRect().intersects(cat->GetRect()))
+			{
+				//рисуем парашют у врага
+				enemy->SetProtection();
+			}
+
+		}
+
+
+		for (auto scroll : missions)
+		{
+			if (enemy->GetRect().intersects(scroll->GetSprite().getGlobalBounds()))
+			{
+				//рисуем парашют у врага
+				enemy->SetProtection();
 			}
 		}
 

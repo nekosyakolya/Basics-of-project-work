@@ -10,10 +10,19 @@ class CEnemy: public
 public:
 	CEnemy(const sf::Vector2f &position, float delta);
 	void Update(float time) override;
-
-	
 	void UpdatePosition(float dx) override;
 	
+	sf::Sprite GetRectProtection()const;
+
+	void SetProtection();
+
+	bool IsJump() const;
 	~CEnemy();
+private:
+	sf::Image m_imageProtection;
+	sf::Texture m_textureProtection;
+	sf::Sprite m_spriteProtection;
+
+	bool m_isJump;
 };
 
