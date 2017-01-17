@@ -31,6 +31,7 @@ public:
 	void SetSpeed();
 
 	sf::Sprite GetSpriteProtection()const;
+	sf::Sprite GetSpriteFreeze()const;
 
 	void InitClock();
 	void SetDelay();
@@ -40,6 +41,8 @@ public:
 
 	int GetTotal();
 	void UpdateTotal(int);
+
+	bool IsFreeze()const;
 
 	~CPlayer();
 private:
@@ -55,6 +58,9 @@ private:
 	sf::Image m_imageProtection;
 	sf::Texture m_textureProtection;
 	sf::Sprite m_spriteProtection;
+
+	sf::Texture m_textureFreeze;
+	sf::Sprite m_spriteFreeze;
 
 
 	sf::Clock m_clock;

@@ -104,6 +104,11 @@ void Display(RenderWindow &window, CPlayer &player, View &view, Level & level, s
 		window.draw(player.GetSpriteProtection());
 	}
 
+	if (player.IsFreeze())
+	{
+		window.draw(player.GetSpriteFreeze());
+	}
+
 	window.draw(frame.spriteFrame);
 	window.draw(frame.text);
 

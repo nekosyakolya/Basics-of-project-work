@@ -35,6 +35,15 @@ CPlayer::CPlayer(sf::Vector2f position) :
 
 
 
+	auto positionSpriteFreeze = sf::Vector2f(0, 320);
+
+
+	m_textureFreeze.loadFromImage(m_imageProtection);
+
+	m_spriteFreeze.setTexture(m_textureFreeze);
+	m_spriteFreeze.setTextureRect(sf::IntRect(static_cast<int>(positionSpriteFreeze.x), static_cast<int>(positionSpriteFreeze.y), 40, 40));
+
+
 	auto positionSprite = sf::Vector2f(0, 120);
 
 
@@ -106,7 +115,7 @@ void CPlayer::Update(float time)
 	{
 		m_delta /= 1.014f;
 	}
-	else
+	else if (!m_freeze)
 	{
 		m_sprite.setTextureRect(sf::IntRect(40, 40 * static_cast<int>(m_currentFrame), 40, 40));
 	}
@@ -152,6 +161,11 @@ sf::Sprite CPlayer::GetSpriteProtection() const
 	return m_spriteProtection;
 }
 
+sf::Sprite CPlayer::GetSpriteFreeze() const
+{
+	return m_spriteFreeze;
+}
+
 void CPlayer::InitClock()
 {
 	m_clock.restart();
@@ -168,12 +182,14 @@ void CPlayer::Freezing()
 {
 	if (m_freeze)
 	{
+		m_spriteFreeze.setPosition(m_position.x, m_position.y);
 		m_delta = 0;
-		if (m_time >= 3)
+		if (m_time >= 2)
 		{
 			m_clock.restart();
 			m_freeze = false;
 			m_delta = -0.1f;
+			m_offset.x = 0;
 		}
 		m_time = static_cast<unsigned>(m_clock.getElapsedTime().asSeconds());
 	}
@@ -196,6 +212,11 @@ void CPlayer::UpdateTotal(int dTotal)
 	{
 		m_total = 0;
 	}
+}
+
+bool CPlayer::IsFreeze() const
+{
+	return m_freeze;
 }
 
 CPlayer::~CPlayer()

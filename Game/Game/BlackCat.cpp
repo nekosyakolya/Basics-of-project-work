@@ -13,7 +13,7 @@ void CBlackCat::CheckCollision(float dx, float dy)
 
 		if (GetRect().intersects(m_obj[i].rect) && (m_obj[i].name == "collision"))
 		{
-			if (dx > 0)
+			if (dx < 0)
 			{
 				m_position.x = m_obj[i].rect.left - 40;
 				m_isCollision = true;
