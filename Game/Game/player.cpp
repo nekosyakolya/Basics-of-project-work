@@ -2,25 +2,54 @@
 #include "player.h"
 
 
-CPlayer::CPlayer(sf::Vector2f position):
-	m_object(sf::Vector2f(40, 40)),
-	m_position(position),
-	m_direction(Direction::UP),
-	m_offset(sf::Vector2f(0, 0))
+CPlayer::CPlayer(sf::Vector2f position) :
+	CHero(position)
 {
-	m_object.setPosition(m_position);
-	m_object.setFillColor(sf::Color::Red);
+	m_delta = -0.1f;
+	m_currentFrame = 0.0;
+	m_time = 0;
+
+	m_total = 0;
+
+	m_buffer.loadFromFile("resources/eating.wav");
+	m_sound.setBuffer(m_buffer);
+
+
+	m_bufferJump.loadFromFile("resources/jump.wav");
+	m_soundJump.setBuffer(m_bufferJump);
+
+
+	m_isNewMission = false;
+	m_placeInFinal = 0;
+
+	m_delay = false;
+
+	m_imageProtection.loadFromFile("resources/map.png");
+
+	auto positionSpriteProtection = sf::Vector2f(0, 273);
+	m_textureProtection.loadFromImage(m_imageProtection);
+
+	m_spriteProtection.setTexture(m_textureProtection);
+
+	m_spriteProtection.setTextureRect(sf::IntRect(static_cast<int>(positionSpriteProtection.x), static_cast<int>(positionSpriteProtection.y), 50, 50));
+
+
+
+	auto positionSprite = sf::Vector2f(0, 120);
+
+
+	m_texture.loadFromImage(m_image);
+
+	m_sprite.setTexture(m_texture);
+	m_sprite.setTextureRect(sf::IntRect(static_cast<int>(positionSprite.x), static_cast<int>(positionSprite.y), 40, 40));
+
+
+	m_clockTotal.restart();
+	m_timeTotal = static_cast<unsigned>(m_clockTotal.getElapsedTime().asSeconds());
+
+
 }
 
-sf::RectangleShape CPlayer::GetPlayer() const
-{
-	return m_object;
-}
-
-sf::Vector2f CPlayer::GetPosition() const
-{
-	return m_position;
-}
 
 
 void CPlayer::GetDirection()
@@ -35,66 +64,172 @@ void CPlayer::GetDirection()
 	{
 		m_direction = Direction::RIGHT;
 	}
+
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+	{
+		m_direction = Direction::JUMP;
+	}
+
 }
 
 void CPlayer::Update(float time)
 {
+	m_currentFrame += 0.005f * time;
+	if (m_currentFrame > 3)
+	{
+		m_currentFrame = 0.0;
+	}
+
 
 	GetDirection();
 	switch (m_direction)
 	{
 	case Direction::RIGHT:
-		m_offset.x = 0.1;
+		m_offset.x = 0.1f;
 		break;
 	case Direction::LEFT:
-		m_offset.x = -0.1;
+		m_offset.x = -0.1f;
 		break;
 	case Direction::UP:
 		m_offset.x = 0;
 		break;
+	case Direction::JUMP:
+		m_offset.y = -0.7f;
+		m_soundJump.play();
+		break;
 	default:
 		break;
 	}
-	m_offset.y = -0.1;
-	m_position.x += m_offset.x * time;
-	CheckCollision(m_offset.x, 0);
+
+	if (IsFinalState())
+	{
+		m_delta /= 1.014f;
+	}
+	else
+	{
+		m_sprite.setTextureRect(sf::IntRect(40, 40 * static_cast<int>(m_currentFrame), 40, 40));
+	}
+	m_offset.y = m_delta;
 
 	m_position.y += m_offset.y * time;
 
-	m_object.setPosition(m_position);
-}
+	m_position.x += m_offset.x * time;
+	CheckCollision(m_offset.x, 0);
 
-void CPlayer::CheckCollision(float dx, float dy)
-{
-
-	for (size_t i = 0; i < m_obj.size(); ++i)
+	if (IsJump())
 	{
-		if (GetRect().intersects(m_obj[i].rect) && (m_obj[i].name == "collision"))
-		{
-			if (dx > 0)
-			{
-				m_position.x = m_obj[i].rect.left - 40;
-			}
-			if (dx < 0)
-			{
-				m_position.x = m_obj[i].rect.left + m_obj[i].rect.width;
-			}
-		}
+		m_spriteProtection.setPosition(m_position.x - 5, m_position.y - 5);
 	}
+
+	if (m_timeTotal > 0.5 && !IsFinalState())
+	{
+		m_clockTotal.restart();
+		++m_total;
+	}
+	m_timeTotal = static_cast<unsigned>(m_clockTotal.getElapsedTime().asSeconds());
+
 }
 
-void CPlayer::InitPlayer(Level & level)
+
+
+void CPlayer::ChangePosition()
 {
-	m_obj = level.GetAllObjects();
+	m_delta /= 1.02f;
 }
 
+
+
+void CPlayer::UpdatePosition(float dx)
+{
+	m_position.x = dx;
+}
+
+
+
+sf::Sprite CPlayer::GetSpriteProtection() const
+{
+	return m_spriteProtection;
+}
+
+void CPlayer::InitClock()
+{
+	m_clock.restart();
+	m_time = static_cast<unsigned>(m_clock.getElapsedTime().asSeconds());
+	m_delay = true;
+}
+
+unsigned CPlayer::GetTotal()
+{
+	return m_total;
+}
+
+void CPlayer::UpdateTotal(int dTotal)
+{
+	m_total += dTotal;
+}
 
 CPlayer::~CPlayer()
 {
 }
 
-sf::FloatRect CPlayer::GetRect()
-{
 
-	return sf::FloatRect(m_position.x, m_position.y, 40, 40);
+void CPlayer::SetPlaceInFinal()
+{
+	++m_placeInFinal;
+}
+
+bool CPlayer::IsJump()
+{
+	return m_direction == Direction::JUMP;
+}
+
+
+void CPlayer::PlaySound()
+{
+	m_sound.play();
+}
+
+unsigned CPlayer::GetPlaceInFinal() const
+{
+	return m_placeInFinal;
+}
+
+bool CPlayer::IsNewMission() const
+{
+	return m_isNewMission;
+}
+
+void CPlayer::SetNewMission()
+{
+	if (!m_isNewMission)
+	{
+		m_isNewMission = true;
+	}
+	else
+	{
+		m_isNewMission = false;
+	}
+
+}
+
+void CPlayer::UpdateDelta()
+{
+	m_delta *= 1.04f;
+}
+
+void CPlayer::SetBigSpeed()
+{
+	if (m_delay)
+	{
+		m_delta -= 0.0005f;
+		if (m_time >= 2)
+		{
+			m_clock.restart();
+			m_delay = false;
+			m_delta = -0.1f;
+		}
+		m_time = static_cast<unsigned>(m_clock.getElapsedTime().asSeconds());
+	}
+
 }

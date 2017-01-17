@@ -12,9 +12,9 @@
 
 struct Object
 {
-	int GetPropertyInt(std::string name);
-	float GetPropertyFloat(std::string name);
-	std::string GetPropertyString(std::string name);
+	int GetPropertyInt(std::string);
+	float GetPropertyFloat(std::string);
+	std::string GetPropertyString(std::string);
 
 	std::string name;
 	std::string type;

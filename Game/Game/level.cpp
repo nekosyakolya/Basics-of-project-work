@@ -1,19 +1,19 @@
 ﻿#include "stdafx.h"
 #include "level.h"
 
-int Object::GetPropertyInt(std::string name)
+int Object::GetPropertyInt(std::string nameStr)
 {
-	return atoi(properties[name].c_str());
+	return atoi(properties[nameStr].c_str());
 }
 
-float Object::GetPropertyFloat(std::string name)
+float Object::GetPropertyFloat(std::string nameStr)
 {
-	return static_cast<float>(strtod(properties[name].c_str(), nullptr));
+	return static_cast<float>(strtod(properties[nameStr].c_str(), nullptr));
 }
 
-std::string Object::GetPropertyString(std::string name)
+std::string Object::GetPropertyString(std::string nameStr)
 {
-	return properties[name];
+	return properties[nameStr];
 }
 
 bool Level::LoadFromFile(const std::string &filename)
@@ -75,8 +75,11 @@ bool Level::LoadFromFile(const std::string &filename)
 			subRects.push_back(rect);
 		}
 
-	TiXmlElement *layerElement;
-	layerElement = map->FirstChildElement("layer");
+
+	m_objects.clear();
+	m_layers.clear();
+
+	TiXmlElement *layerElement = map->FirstChildElement("layer");
 	while (layerElement)
 	{
 		Layer layer;
