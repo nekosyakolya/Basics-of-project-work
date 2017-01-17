@@ -32,5 +32,6 @@
 
 #include "Cat.h"
 
+#include "BlackCat.h"
 #include "Puddle.h"
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы

@@ -156,6 +156,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BlackCat.h" />
     <ClInclude Include="bonus.h" />
     <ClInclude Include="Cat.h" />
     <ClInclude Include="Donut.h" />
@@ -173,6 +174,7 @@
     <ClInclude Include="tinyxml.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BlackCat.cpp" />
     <ClCompile Include="bonus.cpp" />
     <ClCompile Include="Cat.cpp" />
     <ClCompile Include="Donut.cpp" />

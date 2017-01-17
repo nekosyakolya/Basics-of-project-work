@@ -48,7 +48,7 @@ void CheckCollision(std::vector<CDonut*> &bonuses, CPlayer & player)
 	}
 }
 
-void Display(RenderWindow &window, CPlayer &player, View &view, Level & level, std::vector<CDonut*> &bonuses, std::vector<CEnemy*> &enemies, Text &text, std::vector<CMission*> &missions, std::vector<CPuddle*> &puddles, std::vector<CCat*> &cats, Frame &frame)
+void Display(RenderWindow &window, CPlayer &player, View &view, Level & level, std::vector<CDonut*> &bonuses, std::vector<CEnemy*> &enemies, Text &text, std::vector<CMission*> &missions, std::vector<CPuddle*> &puddles, std::vector<CCat*> &cats, Frame &frame, std::vector<CBlackCat*> &blackCats)
 {
 	window.setView(view);
 	window.clear(Color::White);
@@ -78,7 +78,14 @@ void Display(RenderWindow &window, CPlayer &player, View &view, Level & level, s
 			window.draw(cat->GetBonus());
 		}
 	}
-
+	for (auto cat : blackCats)
+	{
+		window.draw(cat->GetHero());
+		if (cat->IsRun())
+		{
+			window.draw(cat->GetBonus());
+		}
+	}
 
 
 	for (auto enemy : enemies)
@@ -103,7 +110,7 @@ void Display(RenderWindow &window, CPlayer &player, View &view, Level & level, s
 	window.display();
 }
 
-void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vector<CEnemy*> &enemies, Object &finish, Text &text, std::vector<CMission*> &missions, float time, std::vector<CPuddle*> &puddles, std::vector<CCat*> &cats, CGame &mission)
+void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vector<CEnemy*> &enemies, Object &finish, Text &text, std::vector<CMission*> &missions, float time, std::vector<CPuddle*> &puddles, std::vector<CCat*> &cats, CGame &mission, std::vector<CBlackCat*> &blackCats)
 {
 	player.Update(time);
 	for (auto enemy : enemies)
@@ -201,6 +208,24 @@ void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vec
 			cat->SetShow();
 			player.InitClock();
 			player.UpdateTotal(100);
+		}
+
+	}
+
+
+	for (auto cat : blackCats)
+	{
+		if (!(cat->IsStop(player.GetPosition().y)))
+		{
+			cat->Update(time);
+			cat->SetPosition();
+		}
+
+		if (player.GetRect().intersects(cat->GetRectBonus()) && cat->IsShow())
+		{
+			cat->SetShow();
+			//player.InitClock();
+			//player.UpdateTotal(100);
 		}
 
 	}
@@ -314,7 +339,7 @@ void CheckCollisionMini(std::vector<std::shared_ptr<Box>> &boxes, Player & playe
 	}
 }
 
-void EnterGameLoop(RenderWindow &window, CPlayer &player, View &view, Level & level, Clock & clock, std::vector<CDonut*> &bonuses, std::vector<CEnemy*> &enemies, Object &finish, Text &text, std::vector<CMission*> &missions, CGame &mission, CMainMenu &menu, Music &music, std::vector<CPuddle*> &puddles, std::vector<CCat*> &cats, Frame &frame)
+void EnterGameLoop(RenderWindow &window, CPlayer &player, View &view, Level & level, Clock & clock, std::vector<CDonut*> &bonuses, std::vector<CEnemy*> &enemies, Object &finish, Text &text, std::vector<CMission*> &missions, CGame &mission, CMainMenu &menu, Music &music, std::vector<CPuddle*> &puddles, std::vector<CCat*> &cats, Frame &frame, std::vector<CBlackCat*> &blackCats)
 {
 	while (window.isOpen())
 	{
@@ -328,12 +353,12 @@ void EnterGameLoop(RenderWindow &window, CPlayer &player, View &view, Level & le
 			if (!player.IsNewMission())
 			{
 				
-				Update(player, view, bonuses, enemies, finish, text, missions, time, puddles, cats, mission);
+				Update(player, view, bonuses, enemies, finish, text, missions, time, puddles, cats, mission, blackCats);
 
 				frame.spriteFrame.setPosition(0, player.GetPosition().y - 470);
 				frame.text.setPosition(20, player.GetPosition().y - 460);
 				frame.text.setString("Очки: " + to_string(player.GetTotal()));
-				Display(window, player, view, level, bonuses, enemies, text, missions, puddles, cats, frame);
+				Display(window, player, view, level, bonuses, enemies, text, missions, puddles, cats, frame, blackCats);
 			}
 			else
 			{
@@ -608,6 +633,20 @@ int main()
 
 
 
+	std::vector<Object> blackCatStartPos = level.GetObjects("blackCat");
+	std::vector<CBlackCat*> blackCats;
+
+	for (auto currCat : blackCatStartPos)
+	{
+		blackCats.push_back(new CBlackCat(Vector2f(currCat.rect.left, currCat.rect.top)));
+	}
+
+	for (auto cat : blackCats)
+	{
+		cat->Init(level);
+	}
+
+
 	Frame frame;
 
 	frame.textureFrame.loadFromFile("resources/frame.png");
@@ -621,7 +660,7 @@ int main()
 	text.setPosition(20, player.GetPosition().y - 460);
 
 
-	EnterGameLoop(window, player, view, level, clock, bonuses, enemies, finish, text, missions, mission, menu, music, puddles, cats, frame);
+	EnterGameLoop(window, player, view, level, clock, bonuses, enemies, finish, text, missions, mission, menu, music, puddles, cats, frame, blackCats);
 
 	return EXIT_SUCCESS;
 }
