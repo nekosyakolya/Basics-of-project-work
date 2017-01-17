@@ -75,7 +75,7 @@ sf::FloatRect CBlackCat::GetRect() const
 
 sf::FloatRect CBlackCat::GetRectBonus() const
 {
-	return sf::FloatRect(m_position.x + 40, m_position.y, 40, 40);
+	return sf::FloatRect(m_objBonus.rect.left + 40, m_objBonus.rect.top, 40, 40);
 }
 
 sf::Sprite CBlackCat::GetBonus() const

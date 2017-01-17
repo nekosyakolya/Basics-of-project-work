@@ -207,6 +207,7 @@ void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vec
 		{
 			cat->SetShow();
 			player.InitClock();
+			player.SetDelay();
 			player.UpdateTotal(100);
 		}
 
@@ -224,12 +225,14 @@ void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vec
 		if (player.GetRect().intersects(cat->GetRectBonus()) && cat->IsShow())
 		{
 			cat->SetShow();
-			//player.InitClock();
-			//player.UpdateTotal(100);
+			player.InitClock();
+			player.SetFreeze();
 		}
 
 	}
-	player.SetBigSpeed();
+	player.SetSpeed();
+	player.Freezing();
+
 	text.setPosition(180, player.GetPosition().y - 240);
 	UpdateView(320, player.GetPosition().y, view);
 

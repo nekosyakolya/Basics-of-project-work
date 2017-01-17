@@ -10,7 +10,7 @@ CPlayer::CPlayer(sf::Vector2f position) :
 	m_time = 0;
 
 	m_total = 0;
-
+	m_freeze = false;
 	m_buffer.loadFromFile("resources/eating.wav");
 	m_sound.setBuffer(m_buffer);
 
@@ -156,10 +156,35 @@ void CPlayer::InitClock()
 {
 	m_clock.restart();
 	m_time = static_cast<unsigned>(m_clock.getElapsedTime().asSeconds());
+
+}
+
+void CPlayer::SetDelay()
+{
 	m_delay = true;
 }
 
-unsigned CPlayer::GetTotal()
+void CPlayer::Freezing()
+{
+	if (m_freeze)
+	{
+		m_delta = 0;
+		if (m_time >= 3)
+		{
+			m_clock.restart();
+			m_freeze = false;
+			m_delta = -0.1f;
+		}
+		m_time = static_cast<unsigned>(m_clock.getElapsedTime().asSeconds());
+	}
+}
+
+void CPlayer::SetFreeze()
+{
+	m_freeze = true;
+}
+
+int CPlayer::GetTotal()
 {
 	return m_total;
 }
@@ -167,6 +192,10 @@ unsigned CPlayer::GetTotal()
 void CPlayer::UpdateTotal(int dTotal)
 {
 	m_total += dTotal;
+	if (m_total < 0)
+	{
+		m_total = 0;
+	}
 }
 
 CPlayer::~CPlayer()
@@ -218,7 +247,7 @@ void CPlayer::UpdateDelta()
 	m_delta *= 1.04f;
 }
 
-void CPlayer::SetBigSpeed()
+void CPlayer::SetSpeed()
 {
 	if (m_delay)
 	{

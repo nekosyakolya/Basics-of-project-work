@@ -28,13 +28,17 @@ public:
 	void SetNewMission();
 	void UpdateDelta();
 
-	void SetBigSpeed();
+	void SetSpeed();
 
 	sf::Sprite GetSpriteProtection()const;
 
 	void InitClock();
+	void SetDelay();
 
-	unsigned GetTotal();
+	void Freezing();
+	void SetFreeze();
+
+	int GetTotal();
 	void UpdateTotal(int);
 
 	~CPlayer();
@@ -59,6 +63,8 @@ private:
 
 	sf::Clock m_clockTotal;
 	unsigned m_timeTotal;
-	unsigned m_total;
+	int m_total;
+
+	bool m_freeze;
 };
 
