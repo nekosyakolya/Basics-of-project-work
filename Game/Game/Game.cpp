@@ -151,6 +151,7 @@ void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vec
 	{
 		player.SetFinalState();
 		player.SetPlaceInFinal();
+		player.UpdateTotal(210 * 1 / player.GetPlaceInFinal());
 		text.setString("Вы заняли " + to_string(player.GetPlaceInFinal()) + " место\n");
 	}
 
