@@ -140,6 +140,15 @@ void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vec
 				enemy->UpdatePosition(0.1f * time);
 			}
 
+
+			if (player.GetOffset().x == 0)
+			{
+				if (!enemy->Check(0.1f * time))
+				{
+					enemy->Check(-0.1f * time);
+				}
+				
+			}
 		}
 
 		if (finish.rect.intersects(enemy->GetHero().getGlobalBounds()) && !enemy->IsFinalState())
@@ -162,14 +171,10 @@ void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vec
 
 		for (auto cat : cats)
 		{
-
 			if ((enemy->GetRect().intersects(cat->GetRectBonus()) && cat->IsShow()) || enemy->GetRect().intersects(cat->GetRect()))
 			{
-				//рисуем парашют у врага
 				enemy->SetProtection();
 			}
-
-
 		}
 
 
@@ -177,7 +182,6 @@ void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vec
 		{
 			if ((enemy->GetRect().intersects(cat->GetRectBonus()) && cat->IsShow()) || enemy->GetRect().intersects(cat->GetRect()))
 			{
-				//рисуем парашют у врага
 				enemy->SetProtection();
 			}
 
@@ -188,7 +192,6 @@ void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vec
 		{
 			if (enemy->GetRect().intersects(scroll->GetSprite().getGlobalBounds()))
 			{
-				//рисуем парашют у врага
 				enemy->SetProtection();
 			}
 		}

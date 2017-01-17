@@ -114,6 +114,7 @@ void CPlayer::Update(float time)
 	if (IsFinalState())
 	{
 		m_delta /= 1.014f;
+		m_offset.x = 0;
 	}
 	else if (!m_freeze)
 	{

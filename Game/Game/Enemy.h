@@ -12,6 +12,9 @@ public:
 	void Update(float time) override;
 	void UpdatePosition(float dx) override;
 	
+	bool Check(float dx);
+
+
 	sf::Sprite GetRectProtection()const;
 
 	void SetProtection();

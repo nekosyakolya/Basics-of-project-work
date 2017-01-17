@@ -63,6 +63,30 @@ void CEnemy::UpdatePosition(float dx)
 	
 }
 
+bool CEnemy::Check(float dx)
+{
+	m_position.x += dx;
+	for (size_t i = 0; i < m_obj.size(); ++i)
+	{
+
+		if (GetRect().intersects(m_obj[i].rect) && (m_obj[i].name == "collision"))
+		{
+			if (dx > 0)
+			{
+				m_position.x = m_obj[i].rect.left - 40 * 2;
+				return false;
+			}
+			if (dx < 0)
+			{
+				m_position.x = m_obj[i].rect.left + (m_obj[i].rect.width * 2);
+				return false;
+
+			}
+		}
+	}
+	return true;
+}
+
 sf::Sprite CEnemy::GetRectProtection() const
 {
 	return m_spriteProtection;
@@ -72,14 +96,8 @@ sf::Sprite CEnemy::GetRectProtection() const
 
 void CEnemy::SetProtection()
 {
-	/*if (m_isJump)
-	{
-		m_isJump = false;
-	}
-	else
-	{*/
-		m_isJump = true;
-	//}
+	m_isJump = true;
+
 
 }
 
