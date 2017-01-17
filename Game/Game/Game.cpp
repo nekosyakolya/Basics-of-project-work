@@ -9,6 +9,10 @@ struct Frame
 {
 	sf::Texture textureFrame;
 	sf::Sprite spriteFrame;
+
+
+	sf::Texture textureButton;
+	sf::Sprite spriteButton;
 	sf::Text text;
 };
 
@@ -99,11 +103,7 @@ void Display(RenderWindow &window, CPlayer &player, View &view, Level & level, s
 	}
 
 	window.draw(player.GetHero());
-	if (player.IsFinalState())
-	{
-		window.draw(text);
-	}
-
+	
 	if (player.IsJump())
 	{
 		window.draw(player.GetSpriteProtection());
@@ -117,11 +117,20 @@ void Display(RenderWindow &window, CPlayer &player, View &view, Level & level, s
 	window.draw(frame.spriteFrame);
 	window.draw(frame.text);
 
+	if (player.IsFinalState())
+	{
+		window.draw(text);
+		window.draw(frame.spriteButton);
+	}
+
 	window.display();
 }
 
 void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vector<CEnemy*> &enemies, Object &finish, Text &text, std::vector<CMission*> &missions, float time, std::vector<CPuddle*> &puddles, std::vector<CCat*> &cats, CGame &mission, std::vector<CBlackCat*> &blackCats)
 {
+
+	
+
 	player.Update(time);
 	for (auto enemy : enemies)
 	{
@@ -400,15 +409,38 @@ void EnterGameLoop(RenderWindow &window, CPlayer &player, View &view, Level & le
 		HandleEvents(window);
 		if (!menu.IsOpen())
 		{
+
 			if (!player.IsNewMission())
 			{
 				
-				Update(player, view, bonuses, enemies, finish, text, missions, time, puddles, cats, mission, blackCats);
 
+				Update(player, view, bonuses, enemies, finish, text, missions, time, puddles, cats, mission, blackCats);
+				
 				frame.spriteFrame.setPosition(0, player.GetPosition().y - 470);
 				frame.text.setPosition(20, player.GetPosition().y - 460);
 				frame.text.setString("Очки: " + to_string(player.GetTotal()));
+				
 				Display(window, player, view, level, bonuses, enemies, text, missions, puddles, cats, frame, blackCats);
+
+				float dx = player.GetPosition().y - 460;
+
+				frame.spriteButton.setPosition(550, dx);
+
+				if (player.IsFinalState())
+				{
+
+					if (FloatRect(550, 15, 60, 60).contains(static_cast<sf::Vector2f>(Mouse::getPosition(window))) &&
+						(Mouse::isButtonPressed(Mouse::Left)))
+					{
+						level.LoadFromFile("resources/map2.tmx");
+						
+						Object hero = level.GetObject("player");
+						player.SetPosition(Vector2f(hero.rect.left, hero.rect.top));
+						player.Init(level);
+
+					}
+				}
+
 			}
 			else
 			{
@@ -702,6 +734,11 @@ int main()
 	frame.textureFrame.loadFromFile("resources/frame.png");
 	frame.spriteFrame.setTexture(frame.textureFrame);
 	frame.spriteFrame.setPosition(0, player.GetPosition().y - 470);
+
+	frame.textureButton.loadFromFile("resources/frame-next.png");
+	frame.spriteButton.setTexture(frame.textureButton);
+	frame.spriteButton.setPosition(440, player.GetPosition().y - 460);
+
 	frame.text.setString("");
 	frame.text.setFont(font);
 	frame.text.setCharacterSize(24);

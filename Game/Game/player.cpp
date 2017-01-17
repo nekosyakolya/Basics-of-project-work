@@ -64,21 +64,25 @@ CPlayer::CPlayer(sf::Vector2f position) :
 void CPlayer::GetDirection()
 {
 	m_direction = Direction::UP;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	if (!m_isFinalState)
 	{
-		m_direction = Direction::LEFT;
-	}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !m_freeze)
+		{
+			m_direction = Direction::LEFT;
+		}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-	{
-		m_direction = Direction::RIGHT;
-	}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !m_freeze)
+		{
+			m_direction = Direction::RIGHT;
+		}
 
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-	{
-		m_direction = Direction::JUMP;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !m_freeze)
+		{
+			m_direction = Direction::JUMP;
+		}
 	}
+	
 
 }
 
@@ -114,7 +118,6 @@ void CPlayer::Update(float time)
 	if (IsFinalState())
 	{
 		m_delta /= 1.014f;
-		m_offset.x = 0;
 	}
 	else if (!m_freeze)
 	{

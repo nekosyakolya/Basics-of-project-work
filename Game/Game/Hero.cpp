@@ -37,6 +37,11 @@ void CHero::SetPosition()
 	m_sprite.setPosition(m_position);
 }
 
+void CHero::SetPosition(const sf::Vector2f &position)
+{
+	m_position = position;
+}
+
 bool CHero::IsFinalState() const
 {
 	return m_isFinalState;

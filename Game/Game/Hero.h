@@ -25,7 +25,7 @@ public:
 	virtual void Update(float time) = 0;
 
 	void SetPosition();
-
+	void SetPosition(const sf::Vector2f &);
 
 	virtual void UpdatePosition(float dx) = 0;
 
