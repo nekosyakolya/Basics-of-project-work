@@ -36,14 +36,13 @@ void UpdateView(float x, float y, View &view)
 	view.setCenter(x + 20, y - 213);
 }
 
-void CheckCollision(std::vector<CDonut*> &bonuses, CPlayer & player)
+void CheckCollision(std::vector<std::shared_ptr<CDonut>> &bonuses, CPlayer & player)
 {
 	
 	for (size_t i = 0; i < bonuses.size(); ++i)
 	{
 		if (player.GetRect().intersects(bonuses[i]->GetSprite().getGlobalBounds()))
 		{
-			delete bonuses[i];
 			bonuses.erase(bonuses.begin() + i);
 			player.PlaySound();
 			player.ChangePosition();
@@ -52,7 +51,7 @@ void CheckCollision(std::vector<CDonut*> &bonuses, CPlayer & player)
 	}
 }
 
-void Display(RenderWindow &window, CPlayer &player, View &view, Level & level, std::vector<CDonut*> &bonuses, std::vector<CEnemy*> &enemies, Text &text, std::vector<CMission*> &missions, std::vector<CPuddle*> &puddles, std::vector<CCat*> &cats, Frame &frame, std::vector<CBlackCat*> &blackCats)
+void Display(RenderWindow &window, CPlayer &player, View &view, Level & level, std::vector<std::shared_ptr<CDonut>> &bonuses, std::vector<std::shared_ptr<CEnemy>> &enemies, Text &text, std::vector<std::shared_ptr<CMission>> &missions, std::vector<std::shared_ptr<CPuddle>> &puddles, std::vector<std::shared_ptr<CCat>> &cats, Frame &frame, std::vector<std::shared_ptr<CBlackCat>> &blackCats)
 {
 	window.setView(view);
 	window.clear(Color::White);
@@ -126,7 +125,7 @@ void Display(RenderWindow &window, CPlayer &player, View &view, Level & level, s
 	window.display();
 }
 
-void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vector<CEnemy*> &enemies, Object &finish, Text &text, std::vector<CMission*> &missions, float time, std::vector<CPuddle*> &puddles, std::vector<CCat*> &cats, CGame &mission, std::vector<CBlackCat*> &blackCats)
+void Update(CPlayer &player, View &view, std::vector<std::shared_ptr<CDonut>> &bonuses, std::vector<std::shared_ptr<CEnemy>> &enemies, Object &finish, Text &text, std::vector<std::shared_ptr<CMission>> &missions, float time, std::vector<std::shared_ptr<CPuddle>> &puddles, std::vector<std::shared_ptr<CCat>> &cats, CGame &mission, std::vector<std::shared_ptr<CBlackCat>> &blackCats)
 {
 
 	
@@ -172,7 +171,6 @@ void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vec
 		{
 			if (enemy->GetRect().intersects(bonuses[i]->GetSprite().getGlobalBounds()))
 			{
-				delete bonuses[i];
 				bonuses.erase(bonuses.begin() + i);
 			}
 		}
@@ -223,7 +221,6 @@ void Update(CPlayer &player, View &view, std::vector<CDonut*> &bonuses, std::vec
 	{
 		if (player.GetRect().intersects(missions[i]->GetSprite().getGlobalBounds()))
 		{
-			delete missions[i];
 			missions.erase(missions.begin() + i);
 			player.SetNewMission();
 			mission.PlaySound();
@@ -398,7 +395,7 @@ void CheckCollisionMini(std::vector<std::shared_ptr<Box>> &boxes, Player & playe
 	}
 }
 
-void EnterGameLoop(RenderWindow &window, CPlayer &player, View &view, Level & level, Clock & clock, std::vector<CDonut*> &bonuses, std::vector<CEnemy*> &enemies, Object &finish, Text &text, std::vector<CMission*> &missions, CGame &mission, CMainMenu &menu, Music &music, std::vector<CPuddle*> &puddles, std::vector<CCat*> &cats, Frame &frame, std::vector<CBlackCat*> &blackCats)
+void EnterGameLoop(RenderWindow &window, CPlayer &player, View &view, Level & level, Clock & clock, std::vector<std::shared_ptr<CDonut>> &bonuses, std::vector<std::shared_ptr<CEnemy>> &enemies, Object &finish, Text &text, std::vector<std::shared_ptr<CMission>> &missions, CGame &mission, CMainMenu &menu, Music &music, std::vector<std::shared_ptr<CPuddle>> &puddles, std::vector<std::shared_ptr<CCat>> &cats, Frame &frame, std::vector<std::shared_ptr<CBlackCat>> &blackCats)
 {
 	while (window.isOpen())
 	{
@@ -437,6 +434,32 @@ void EnterGameLoop(RenderWindow &window, CPlayer &player, View &view, Level & le
 						Object hero = level.GetObject("player");
 						player.SetPosition(Vector2f(hero.rect.left, hero.rect.top));
 						player.Init(level);
+						bonuses.clear();
+						enemies.clear();
+						missions.clear();
+						puddles.clear();
+						cats.clear();
+						blackCats.clear();
+
+
+
+						std::vector<Object> bonusStartPos = level.GetObjects("bonus");
+
+						for (auto currBonus : bonusStartPos)
+						{
+							bonuses.push_back(std::shared_ptr<CDonut>(new CDonut(Vector2f(currBonus.rect.left, currBonus.rect.top))));
+						}
+
+						std::vector<Object> enemyStartPos = level.GetObjects("enemy");
+
+						for (auto currEnemy : enemyStartPos)
+						{
+							float timeSpeed = static_cast<float>(clock.getElapsedTime().asMicroseconds());
+							clock.restart();
+							timeSpeed = timeSpeed / 10000000;
+							enemies.push_back(std::shared_ptr<CEnemy>(new CEnemy(Vector2f(currEnemy.rect.left, currEnemy.rect.top), timeSpeed)));
+						}
+
 
 					}
 				}
@@ -635,22 +658,22 @@ int main()
 	player.Init(level);
 
 	std::vector<Object> bonusStartPos = level.GetObjects("bonus");
-	std::vector<CDonut*> bonuses;
-
+	std::vector<std::shared_ptr<CDonut>> bonuses;
+	
 	for (auto currBonus : bonusStartPos)
 	{
-		bonuses.push_back(new CDonut(Vector2f(currBonus.rect.left, currBonus.rect.top)));
+		bonuses.push_back(std::shared_ptr<CDonut>(new CDonut(Vector2f(currBonus.rect.left, currBonus.rect.top))));
 	}
 
 	std::vector<Object> enemyStartPos = level.GetObjects("enemy");
-	std::vector<CEnemy*> enemies;
+	std::vector<std::shared_ptr<CEnemy>> enemies;
 
 	for (auto currEnemy : enemyStartPos)
 	{
 		float timeSpeed = static_cast<float>(clock.getElapsedTime().asMicroseconds());
 		clock.restart();
 		timeSpeed = timeSpeed / 10000000;
-		enemies.push_back(new CEnemy(Vector2f(currEnemy.rect.left, currEnemy.rect.top), timeSpeed));
+		enemies.push_back(std::shared_ptr<CEnemy>(new CEnemy(Vector2f(currEnemy.rect.left, currEnemy.rect.top), timeSpeed)));
 	}
 
 	
@@ -664,11 +687,11 @@ int main()
 
 
 	std::vector<Object> newMissionStart = level.GetObjects("newMission");
-	std::vector<CMission*> missions;
+	std::vector<std::shared_ptr<CMission>> missions;
 
 	for (auto currBonus : newMissionStart)
 	{
-		missions.push_back(new CMission(Vector2f(currBonus.rect.left, currBonus.rect.top)));
+		missions.push_back(std::shared_ptr<CMission>(new CMission(Vector2f(currBonus.rect.left, currBonus.rect.top))));
 	}
 
 
@@ -691,21 +714,21 @@ int main()
 
 
 	std::vector<Object> puddleStartPos = level.GetObjects("puddle");
-	std::vector<CPuddle*> puddles;
+	std::vector<std::shared_ptr<CPuddle>> puddles;
 
 	for (auto currPuddle : puddleStartPos)
 	{
-		puddles.push_back(new CPuddle(Vector2f(currPuddle.rect.left, currPuddle.rect.top)));
+		puddles.push_back(std::shared_ptr<CPuddle>(new CPuddle(Vector2f(currPuddle.rect.left, currPuddle.rect.top))));
 	}
 
 
 
 	std::vector<Object> catStartPos = level.GetObjects("cat");
-	std::vector<CCat*> cats;
+	std::vector<std::shared_ptr<CCat>> cats;
 
 	for (auto currCat : catStartPos)
 	{
-		cats.push_back(new CCat(Vector2f(currCat.rect.left, currCat.rect.top)));
+		cats.push_back(std::shared_ptr<CCat>(new CCat(Vector2f(currCat.rect.left, currCat.rect.top))));
 	}
 
 	for (auto cat : cats)
@@ -716,11 +739,11 @@ int main()
 
 
 	std::vector<Object> blackCatStartPos = level.GetObjects("blackCat");
-	std::vector<CBlackCat*> blackCats;
+	std::vector<std::shared_ptr<CBlackCat>> blackCats;
 
 	for (auto currCat : blackCatStartPos)
 	{
-		blackCats.push_back(new CBlackCat(Vector2f(currCat.rect.left, currCat.rect.top)));
+		blackCats.push_back(std::shared_ptr<CBlackCat>(new CBlackCat(Vector2f(currCat.rect.left, currCat.rect.top))));
 	}
 
 	for (auto cat : blackCats)
