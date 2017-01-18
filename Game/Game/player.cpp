@@ -5,12 +5,7 @@
 CPlayer::CPlayer(sf::Vector2f position) :
 	CHero(position)
 {
-	m_delta = -0.1f;
-	m_currentFrame = 0.0;
-	m_time = 0;
-	m_level = 1;
-	m_total = 0;
-	m_freeze = false;
+	Initialisation();
 	m_buffer.loadFromFile("resources/eating.wav");
 	m_sound.setBuffer(m_buffer);
 
@@ -19,10 +14,7 @@ CPlayer::CPlayer(sf::Vector2f position) :
 	m_soundJump.setBuffer(m_bufferJump);
 
 
-	m_isNewMission = false;
-	m_placeInFinal = 0;
-
-	m_delay = false;
+	
 
 	m_imageProtection.loadFromFile("resources/map.png");
 
@@ -231,6 +223,23 @@ unsigned CPlayer::GetLevel()
 void CPlayer::SetLevel()
 {
 	++m_level;
+}
+
+void CPlayer::Initialisation()
+{
+	m_isNewMission = false;
+	m_placeInFinal = 0;
+
+	m_delay = false;
+	m_delta = -0.1f;
+	m_currentFrame = 0.0;
+	m_time = 0;
+	m_level = 1;
+	m_freeze = false;
+	m_direction = Direction::UP;
+	m_offset = sf::Vector2f(0, 0);
+	m_isFinalState = false;
+
 }
 
 CPlayer::~CPlayer()

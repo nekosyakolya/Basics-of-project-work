@@ -125,7 +125,7 @@ bool Level::LoadFromFile(const std::string &filename)
 				sprite.setTexture(m_tilesetImage);
 				sprite.setTextureRect(subRects[subRectToUse]);
 				sprite.setPosition(static_cast<float>(x * m_tileWidth), static_cast<float>(y * m_tileHeight));
-				sprite.setColor(sf::Color(255, 255, 255, layer.opacity));
+				sprite.setColor(sf::Color(static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(layer.opacity)));
 
 				layer.tiles.push_back(sprite);
 			}

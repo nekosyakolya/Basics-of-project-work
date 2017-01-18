@@ -5,8 +5,7 @@
 using namespace sf;
 using namespace std;
 
-
-std::map <unsigned, std::string> levelMainMap = { { 1, "resources/mission1.tmx" },{ 2, "resources/mission.tmx" } };
+std::map <unsigned, std::string> levelMainMap = { { 1, "resources/map.tmx" },{ 2, "resources/map2.tmx" } };
 
 struct Frame
 {
@@ -53,6 +52,84 @@ void CheckCollision(std::vector<std::shared_ptr<CDonut>> &bonuses, CPlayer & pla
 		}
 	}
 }
+
+void Init(CPlayer &player, Level & level, std::vector<std::shared_ptr<CDonut>> &bonuses, std::vector<std::shared_ptr<CEnemy>> &enemies, Object &finish, std::vector<std::shared_ptr<CMission>> &missions, CGame &/*mission*/, CMainMenu &/*menu*/, std::vector<std::shared_ptr<CPuddle>> &puddles, std::vector<std::shared_ptr<CCat>> &cats, std::vector<std::shared_ptr<CBlackCat>> &blackCats)
+{
+
+	Object hero = level.GetObject("player");
+	player.SetPosition(Vector2f(hero.rect.left, hero.rect.top));
+	player.Init(level);
+
+
+	std::vector<Object> bonusStartPos = level.GetObjects("bonus");
+
+	for (auto currBonus : bonusStartPos)
+	{
+		bonuses.push_back(std::shared_ptr<CDonut>(new CDonut(Vector2f(currBonus.rect.left, currBonus.rect.top))));
+	}
+
+	std::vector<Object> enemyStartPos = level.GetObjects("enemy");
+	Clock clock;
+	for (auto currEnemy : enemyStartPos)
+	{
+		float timeSpeed = static_cast<float>(clock.getElapsedTime().asMicroseconds());
+		clock.restart();
+		timeSpeed = timeSpeed / 10000000;
+		enemies.push_back(std::shared_ptr<CEnemy>(new CEnemy(Vector2f(currEnemy.rect.left, currEnemy.rect.top), timeSpeed)));
+	}
+
+
+	for (auto enemy : enemies)
+	{
+		enemy->Init(level);
+	}
+
+	finish = level.GetObject("finish");
+
+
+	std::vector<Object> newMissionStart = level.GetObjects("newMission");
+
+	for (auto currBonus : newMissionStart)
+	{
+		missions.push_back(std::shared_ptr<CMission>(new CMission(Vector2f(currBonus.rect.left, currBonus.rect.top))));
+	}
+
+	std::vector<Object> puddleStartPos = level.GetObjects("puddle");
+
+	for (auto currPuddle : puddleStartPos)
+	{
+		puddles.push_back(std::shared_ptr<CPuddle>(new CPuddle(Vector2f(currPuddle.rect.left, currPuddle.rect.top))));
+	}
+
+
+
+	std::vector<Object> catStartPos = level.GetObjects("cat");
+
+	for (auto currCat : catStartPos)
+	{
+		cats.push_back(std::shared_ptr<CCat>(new CCat(Vector2f(currCat.rect.left, currCat.rect.top))));
+	}
+
+	for (auto cat : cats)
+	{
+		cat->Init(level);
+	}
+
+
+
+	std::vector<Object> blackCatStartPos = level.GetObjects("blackCat");
+	for (auto currCat : blackCatStartPos)
+	{
+		blackCats.push_back(std::shared_ptr<CBlackCat>(new CBlackCat(Vector2f(currCat.rect.left, currCat.rect.top))));
+	}
+
+	for (auto cat : blackCats)
+	{
+		cat->Init(level);
+	}
+
+}
+
 
 void Display(RenderWindow &window, CPlayer &player, View &view, Level & level, std::vector<std::shared_ptr<CDonut>> &bonuses, std::vector<std::shared_ptr<CEnemy>> &enemies, Text &text, std::vector<std::shared_ptr<CMission>> &missions, std::vector<std::shared_ptr<CPuddle>> &puddles, std::vector<std::shared_ptr<CCat>> &cats, Frame &frame, std::vector<std::shared_ptr<CBlackCat>> &blackCats)
 {
@@ -410,8 +487,7 @@ void EnterGameLoop(RenderWindow &window, CPlayer &player, View &view, Level & le
 			if (!player.IsNewMission())
 			{
 				
-				if (!menu.IsEnd())
-				{
+				
 					Update(player, view, bonuses, enemies, finish, text, missions, time, puddles, cats, mission, blackCats);
 
 					frame.spriteFrame.setPosition(0, player.GetPosition().y - 470);
@@ -422,41 +498,14 @@ void EnterGameLoop(RenderWindow &window, CPlayer &player, View &view, Level & le
 
 
 					frame.spriteButton.setPosition(550, player.GetPosition().y - 460);
-				}
-				else
-				{
-					view.setCenter(window.getSize().x / 2.0f + 5, window.getSize().y / 2.0f);
-					window.setView(view);
-
-					window.clear(Color::White);
-
-					window.draw(menu.GetSpriteEnd());
-
-
-
-					window.display();
-				}
-				if (player.IsFinalState() && !menu.IsEnd())
+				
+				if (player.IsFinalState() )
 				{
 
 					if (FloatRect(550, 15, 60, 60).contains(static_cast<sf::Vector2f>(Mouse::getPosition(window))) &&
 						(Mouse::isButtonPressed(Mouse::Left)))
 					{
 						player.SetLevel();
-
-						if ((--levelMainMap.end())->first == player.GetLevel())
-						{
-							menu.End();
-						}
-						else
-						{
-							level.LoadFromFile(levelMainMap.find(player.GetLevel())->second);
-						}
-						
-						
-						Object hero = level.GetObject("player");
-						player.SetPosition(Vector2f(hero.rect.left, hero.rect.top));
-						player.Init(level);
 						bonuses.clear();
 						enemies.clear();
 						missions.clear();
@@ -464,75 +513,9 @@ void EnterGameLoop(RenderWindow &window, CPlayer &player, View &view, Level & le
 						cats.clear();
 						blackCats.clear();
 
-
-
-						std::vector<Object> bonusStartPos = level.GetObjects("bonus");
-
-						for (auto currBonus : bonusStartPos)
-						{
-							bonuses.push_back(std::shared_ptr<CDonut>(new CDonut(Vector2f(currBonus.rect.left, currBonus.rect.top))));
-						}
-
-						std::vector<Object> enemyStartPos = level.GetObjects("enemy");
-
-						for (auto currEnemy : enemyStartPos)
-						{
-							float timeSpeed = static_cast<float>(clock.getElapsedTime().asMicroseconds());
-							clock.restart();
-							timeSpeed = timeSpeed / 10000000;
-							enemies.push_back(std::shared_ptr<CEnemy>(new CEnemy(Vector2f(currEnemy.rect.left, currEnemy.rect.top), timeSpeed)));
-						}
-
-
-						for (auto enemy : enemies)
-						{
-							enemy->Init(level);
-						}
-
-						finish = level.GetObject("finish");
-
-
-						std::vector<Object> newMissionStart = level.GetObjects("newMission");
-
-						for (auto currBonus : newMissionStart)
-						{
-							missions.push_back(std::shared_ptr<CMission>(new CMission(Vector2f(currBonus.rect.left, currBonus.rect.top))));
-						}
-
-						std::vector<Object> puddleStartPos = level.GetObjects("puddle");
-
-						for (auto currPuddle : puddleStartPos)
-						{
-							puddles.push_back(std::shared_ptr<CPuddle>(new CPuddle(Vector2f(currPuddle.rect.left, currPuddle.rect.top))));
-						}
-
-
-
-						std::vector<Object> catStartPos = level.GetObjects("cat");
-
-						for (auto currCat : catStartPos)
-						{
-							cats.push_back(std::shared_ptr<CCat>(new CCat(Vector2f(currCat.rect.left, currCat.rect.top))));
-						}
-
-						for (auto cat : cats)
-						{
-							cat->Init(level);
-						}
-
-
-
-						std::vector<Object> blackCatStartPos = level.GetObjects("blackCat");
-						for (auto currCat : blackCatStartPos)
-						{
-							blackCats.push_back(std::shared_ptr<CBlackCat>(new CBlackCat(Vector2f(currCat.rect.left, currCat.rect.top))));
-						}
-
-						for (auto cat : blackCats)
-						{
-							cat->Init(level);
-						}
-
+						level.LoadFromFile(levelMainMap.find(player.GetLevel())->second);
+						player.Initialisation();
+						Init(player, level, bonuses, enemies, finish, missions, mission, menu, puddles, cats, blackCats);
 
 					}
 				}
@@ -725,48 +708,20 @@ int main()
 	Vector2f windowCenter = Vector2f(window.getSize().x / 2.0f, window.getSize().y / 2.0f);
 	view.reset(sf::FloatRect(0, 0, 680, 500));
 
-	
+
+
 	Object hero = level.GetObject("player");
 	CPlayer player(Vector2f(hero.rect.left, hero.rect.top));
-	player.Init(level);
 
-	std::vector<Object> bonusStartPos = level.GetObjects("bonus");
+
 	std::vector<std::shared_ptr<CDonut>> bonuses;
-	
-	for (auto currBonus : bonusStartPos)
-	{
-		bonuses.push_back(std::shared_ptr<CDonut>(new CDonut(Vector2f(currBonus.rect.left, currBonus.rect.top))));
-	}
 
-	std::vector<Object> enemyStartPos = level.GetObjects("enemy");
 	std::vector<std::shared_ptr<CEnemy>> enemies;
 
-	for (auto currEnemy : enemyStartPos)
-	{
-		float timeSpeed = static_cast<float>(clock.getElapsedTime().asMicroseconds());
-		clock.restart();
-		timeSpeed = timeSpeed / 10000000;
-		enemies.push_back(std::shared_ptr<CEnemy>(new CEnemy(Vector2f(currEnemy.rect.left, currEnemy.rect.top), timeSpeed)));
-	}
-
-	
-
-	for (auto enemy : enemies)
-	{
-		enemy->Init(level);
-	}
-
-	Object finish = level.GetObject("finish");
+	Object finish;
 
 
-	std::vector<Object> newMissionStart = level.GetObjects("newMission");
 	std::vector<std::shared_ptr<CMission>> missions;
-
-	for (auto currBonus : newMissionStart)
-	{
-		missions.push_back(std::shared_ptr<CMission>(new CMission(Vector2f(currBonus.rect.left, currBonus.rect.top))));
-	}
-
 
 
 	Font font;
@@ -785,44 +740,13 @@ int main()
 	music.setVolume(10.5f);
 	music.setLoop(true);
 
-
-	std::vector<Object> puddleStartPos = level.GetObjects("puddle");
 	std::vector<std::shared_ptr<CPuddle>> puddles;
 
-	for (auto currPuddle : puddleStartPos)
-	{
-		puddles.push_back(std::shared_ptr<CPuddle>(new CPuddle(Vector2f(currPuddle.rect.left, currPuddle.rect.top))));
-	}
 
-
-
-	std::vector<Object> catStartPos = level.GetObjects("cat");
 	std::vector<std::shared_ptr<CCat>> cats;
 
-	for (auto currCat : catStartPos)
-	{
-		cats.push_back(std::shared_ptr<CCat>(new CCat(Vector2f(currCat.rect.left, currCat.rect.top))));
-	}
 
-	for (auto cat : cats)
-	{
-		cat->Init(level);
-	}
-
-
-
-	std::vector<Object> blackCatStartPos = level.GetObjects("blackCat");
 	std::vector<std::shared_ptr<CBlackCat>> blackCats;
-
-	for (auto currCat : blackCatStartPos)
-	{
-		blackCats.push_back(std::shared_ptr<CBlackCat>(new CBlackCat(Vector2f(currCat.rect.left, currCat.rect.top))));
-	}
-
-	for (auto cat : blackCats)
-	{
-		cat->Init(level);
-	}
 
 
 	Frame frame;
@@ -842,6 +766,8 @@ int main()
 	text.setStyle(sf::Text::Bold);
 	text.setPosition(20, player.GetPosition().y - 460);
 
+
+	Init(player, level, bonuses, enemies, finish, missions, mission, menu, puddles, cats, blackCats);
 
 	EnterGameLoop(window, player, view, level, clock, bonuses, enemies, finish, text, missions, mission, menu, music, puddles, cats, frame, blackCats);
 

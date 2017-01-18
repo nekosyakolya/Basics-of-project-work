@@ -6,7 +6,7 @@ CBlackCat::~CBlackCat()
 {
 }
 
-void CBlackCat::CheckCollision(float dx, float dy)
+void CBlackCat::CheckCollision(float dx, float /*dy*/)
 {
 	for (size_t i = 0; i < m_obj.size(); ++i)
 	{

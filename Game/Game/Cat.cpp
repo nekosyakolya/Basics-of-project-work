@@ -119,7 +119,7 @@ CCat::~CCat()
 {
 }
 
-void CCat::CheckCollision(float dx, float dy)
+void CCat::CheckCollision(float dx, float /*dy*/)
 {
 
 

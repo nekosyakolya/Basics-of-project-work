@@ -61,7 +61,7 @@ CHero::~CHero()
 {
 }
 
-void CHero::CheckCollision(float dx, float dy)
+void CHero::CheckCollision(float dx, float /*dy*/)
 {
 
 	for (size_t i = 0; i < m_obj.size(); ++i)

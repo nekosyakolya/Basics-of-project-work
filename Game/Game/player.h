@@ -47,6 +47,8 @@ public:
 	unsigned GetLevel();
 	void SetLevel();
 
+	void Initialisation();
+
 	~CPlayer();
 private:
 	unsigned m_placeInFinal;

@@ -3,9 +3,6 @@
  <tileset firstgid="1" name="map2" tilewidth="40" tileheight="40" tilecount="35" columns="5">
   <image source="map2.png" width="200" height="300"/>
  </tileset>
- <tileset firstgid="36" name="map" tilewidth="40" tileheight="40" tilecount="100" columns="10">
-  <image source="map.png" width="425" height="425"/>
- </tileset>
  <layer name="Слой тайлов 1" width="30" height="150">
   <data>
    <tile gid="6"/>
@@ -879,21 +876,21 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="6"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
    <tile gid="6"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -909,21 +906,21 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="6"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
-   <tile gid="16"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
    <tile gid="6"/>
    <tile gid="0"/>
    <tile gid="0"/>
