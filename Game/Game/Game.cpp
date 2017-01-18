@@ -461,6 +461,56 @@ void EnterGameLoop(RenderWindow &window, CPlayer &player, View &view, Level & le
 						}
 
 
+						for (auto enemy : enemies)
+						{
+							enemy->Init(level);
+						}
+
+						finish = level.GetObject("finish");
+
+
+						std::vector<Object> newMissionStart = level.GetObjects("newMission");
+
+						for (auto currBonus : newMissionStart)
+						{
+							missions.push_back(std::shared_ptr<CMission>(new CMission(Vector2f(currBonus.rect.left, currBonus.rect.top))));
+						}
+
+						std::vector<Object> puddleStartPos = level.GetObjects("puddle");
+
+						for (auto currPuddle : puddleStartPos)
+						{
+							puddles.push_back(std::shared_ptr<CPuddle>(new CPuddle(Vector2f(currPuddle.rect.left, currPuddle.rect.top))));
+						}
+
+
+
+						std::vector<Object> catStartPos = level.GetObjects("cat");
+
+						for (auto currCat : catStartPos)
+						{
+							cats.push_back(std::shared_ptr<CCat>(new CCat(Vector2f(currCat.rect.left, currCat.rect.top))));
+						}
+
+						for (auto cat : cats)
+						{
+							cat->Init(level);
+						}
+
+
+
+						std::vector<Object> blackCatStartPos = level.GetObjects("blackCat");
+						for (auto currCat : blackCatStartPos)
+						{
+							blackCats.push_back(std::shared_ptr<CBlackCat>(new CBlackCat(Vector2f(currCat.rect.left, currCat.rect.top))));
+						}
+
+						for (auto cat : blackCats)
+						{
+							cat->Init(level);
+						}
+
+
 					}
 				}
 
