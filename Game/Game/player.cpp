@@ -8,7 +8,7 @@ CPlayer::CPlayer(sf::Vector2f position) :
 	m_delta = -0.1f;
 	m_currentFrame = 0.0;
 	m_time = 0;
-
+	m_level = 1;
 	m_total = 0;
 	m_freeze = false;
 	m_buffer.loadFromFile("resources/eating.wav");
@@ -221,6 +221,16 @@ void CPlayer::UpdateTotal(int dTotal)
 bool CPlayer::IsFreeze() const
 {
 	return m_freeze;
+}
+
+unsigned CPlayer::GetLevel()
+{
+	return m_level;
+}
+
+void CPlayer::SetLevel()
+{
+	++m_level;
 }
 
 CPlayer::~CPlayer()

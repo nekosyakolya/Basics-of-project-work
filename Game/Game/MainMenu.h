@@ -9,11 +9,18 @@ public:
 	sf::Sprite GetSprite() const;
 
 	sf::Sprite GetSpriteAnimation() const;
+
+	sf::Sprite GetSpriteEnd() const;
+
 	sf::Sprite GetButton() const;
 
 	void Animation(float time);
 
 	void SetOpen();
+
+	void End();
+
+	bool IsEnd();
 
 	~CMainMenu();
 private:
@@ -38,6 +45,14 @@ private:
 
 	sf::Texture m_textureButton;
 
+
+	sf::Sprite m_spriteEnd;
+
+	sf::Texture m_textureEnd;
+
 	sf::Music m_music;
+
+
+	bool m_end;
 };
 

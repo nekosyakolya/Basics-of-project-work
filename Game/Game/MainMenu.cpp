@@ -18,6 +18,12 @@ CMainMenu::CMainMenu()
 	m_spriteAnimation.setPosition(256, 136);
 
 
+	m_textureEnd.loadFromFile("resources/fon.jpg");
+	m_spriteEnd.setTexture(m_textureEnd);
+	m_spriteEnd.setPosition(0, 0);
+	m_spriteEnd.setScale(sf::Vector2f(0.6f, 0.6f));
+
+
 	m_textureButton.loadFromFile("resources/play.png");
 	m_spriteButton.setTexture(m_textureButton);
 	m_spriteButton.setPosition(550, 30);
@@ -26,6 +32,7 @@ CMainMenu::CMainMenu()
 	m_music.openFromFile("resources/play.wav");
 	m_music.play();
 	m_music.setLoop(true);
+	m_end = false;
 }
 
 bool CMainMenu::IsOpen() const
@@ -41,6 +48,11 @@ sf::Sprite CMainMenu::GetSprite() const
 sf::Sprite CMainMenu::GetSpriteAnimation() const
 {
 	return m_spriteAnimation;
+}
+
+sf::Sprite CMainMenu::GetSpriteEnd() const
+{
+	return m_spriteEnd;
 }
 
 sf::Sprite CMainMenu::GetButton() const
@@ -71,6 +83,16 @@ void CMainMenu::SetOpen()
 	m_isOpen = false;
 
 	m_music.stop();
+}
+
+void CMainMenu::End()
+{
+	m_end = true;
+}
+
+bool CMainMenu::IsEnd()
+{
+	return m_end;
 }
 
 

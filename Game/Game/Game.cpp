@@ -5,6 +5,9 @@
 using namespace sf;
 using namespace std;
 
+
+std::map <unsigned, std::string> levelMainMap = { { 1, "resources/mission1.tmx" },{ 2, "resources/mission.tmx" } };
+
 struct Frame
 {
 	sf::Texture textureFrame;
@@ -232,9 +235,6 @@ void Update(CPlayer &player, View &view, std::vector<std::shared_ptr<CDonut>> &b
 		if (player.GetRect().intersects(puddle->GetSprite().getGlobalBounds()) && 
 			!player.IsJump() && !puddle->IsVisited())
 		{
-			//уменьшаем скорость
-			//звук воды
-			//скорость ненадолго уменьшаем
 			player.ChangePosition();
 			player.UpdateTotal(-5);
 			puddle->PlaySound();
@@ -410,26 +410,49 @@ void EnterGameLoop(RenderWindow &window, CPlayer &player, View &view, Level & le
 			if (!player.IsNewMission())
 			{
 				
+				if (!menu.IsEnd())
+				{
+					Update(player, view, bonuses, enemies, finish, text, missions, time, puddles, cats, mission, blackCats);
 
-				Update(player, view, bonuses, enemies, finish, text, missions, time, puddles, cats, mission, blackCats);
-				
-				frame.spriteFrame.setPosition(0, player.GetPosition().y - 470);
-				frame.text.setPosition(20, player.GetPosition().y - 460);
-				frame.text.setString("Очки: " + to_string(player.GetTotal()));
-				
-				Display(window, player, view, level, bonuses, enemies, text, missions, puddles, cats, frame, blackCats);
+					frame.spriteFrame.setPosition(0, player.GetPosition().y - 470);
+					frame.text.setPosition(20, player.GetPosition().y - 460);
+					frame.text.setString("Очки: " + to_string(player.GetTotal()));
 
-				float dx = player.GetPosition().y - 460;
+					Display(window, player, view, level, bonuses, enemies, text, missions, puddles, cats, frame, blackCats);
 
-				frame.spriteButton.setPosition(550, dx);
 
-				if (player.IsFinalState())
+					frame.spriteButton.setPosition(550, player.GetPosition().y - 460);
+				}
+				else
+				{
+					view.setCenter(window.getSize().x / 2.0f + 5, window.getSize().y / 2.0f);
+					window.setView(view);
+
+					window.clear(Color::White);
+
+					window.draw(menu.GetSpriteEnd());
+
+
+
+					window.display();
+				}
+				if (player.IsFinalState() && !menu.IsEnd())
 				{
 
 					if (FloatRect(550, 15, 60, 60).contains(static_cast<sf::Vector2f>(Mouse::getPosition(window))) &&
 						(Mouse::isButtonPressed(Mouse::Left)))
 					{
-						level.LoadFromFile("resources/map2.tmx");
+						player.SetLevel();
+
+						if ((--levelMainMap.end())->first == player.GetLevel())
+						{
+							menu.End();
+						}
+						else
+						{
+							level.LoadFromFile(levelMainMap.find(player.GetLevel())->second);
+						}
+						
 						
 						Object hero = level.GetObject("player");
 						player.SetPosition(Vector2f(hero.rect.left, hero.rect.top));

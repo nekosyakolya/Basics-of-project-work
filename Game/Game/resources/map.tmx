@@ -4555,8 +4555,8 @@
  <objectgroup name="blackCat">
   <object id="34" name="blackCat" x="560" y="2880" width="40" height="40"/>
  </objectgroup>
- <objectgroup name="Слой объектов 11">
+ <objectgroup name="Слой объектов 7">
   <object id="35" name="catBonus" x="360" y="2880" width="40" height="40"/>
-  <object id="36" x="446" y="5436" width="32" height="32"/>
+  <object id="36" name="newMission" x="446" y="5436" width="32" height="32"/>
  </objectgroup>
 </map>

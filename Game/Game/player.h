@@ -44,6 +44,9 @@ public:
 
 	bool IsFreeze()const;
 
+	unsigned GetLevel();
+	void SetLevel();
+
 	~CPlayer();
 private:
 	unsigned m_placeInFinal;
@@ -72,5 +75,7 @@ private:
 	int m_total;
 
 	bool m_freeze;
+
+	unsigned m_level;
 };
 
