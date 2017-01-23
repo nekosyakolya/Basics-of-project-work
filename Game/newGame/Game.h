@@ -8,6 +8,8 @@
 #include "Scroll.h"
 #include "Elephant.h"
 #include "Cat.h"
+#include "MainMenu.h"
+
 
 
 #include <memory>
@@ -33,15 +35,17 @@ public:
 
 	void Update(float);
 
-	void Display(sf::RenderWindow &)const;
+	void Display(sf::RenderWindow &);
 
 	~CGame();
 private:
 	Level m_level;
 	CPlayer m_player;
+	CMainMenu m_menu;
 	sf::View m_view;
 	sf::Text m_text;
 	sf::Font m_font;
+	sf::Music m_music;
 	Frame m_frame;
 
 	Object m_finish;

@@ -118,6 +118,10 @@ void CGame::Initialisation()
 	m_text.setStyle(sf::Text::Bold);
 	m_text.setPosition(20, m_player.GetPosition().y - 460);
 
+	m_music.openFromFile("resources/main.wav");
+	m_music.setVolume(10.5f);
+	m_music.setLoop(true);
+
 }
 
 
@@ -210,222 +214,248 @@ void CGame::DrawScrolls(sf::RenderWindow &window) const
 
 void CGame::Update(float time)
 {
-	UpdatePlayer(time);
-	
 
-	for (auto enemy : m_enemies)
+	if (!m_menu.IsOpen())
 	{
-		enemy->Update(time);
 
-		if (m_player.GetRect().intersects(enemy->GetHero().getGlobalBounds()))
+		UpdatePlayer(time);
+
+
+		for (auto enemy : m_enemies)
 		{
-			if (m_player.GetOffset().x < 0)
-			{
-				m_player.UpdatePosition(enemy->GetPosition().x + 40);
-				enemy->UpdatePosition(-0.1f * time);
-			}
-			if (m_player.GetOffset().x > 0)
-			{
-				m_player.UpdatePosition(enemy->GetPosition().x - 40);
-				enemy->UpdatePosition(0.1f * time);
-			}
+			enemy->Update(time);
 
-
-			if (m_player.GetOffset().x == 0)
+			if (m_player.GetRect().intersects(enemy->GetHero().getGlobalBounds()))
 			{
-				if (!enemy->Check(0.1f * time))
+				if (m_player.GetOffset().x < 0)
 				{
-					enemy->Check(-0.1f * time);
+					m_player.UpdatePosition(enemy->GetPosition().x + 40);
+					enemy->UpdatePosition(-0.1f * time);
+				}
+				if (m_player.GetOffset().x > 0)
+				{
+					m_player.UpdatePosition(enemy->GetPosition().x - 40);
+					enemy->UpdatePosition(0.1f * time);
+				}
+
+
+				if (m_player.GetOffset().x == 0)
+				{
+					if (!enemy->Check(0.1f * time))
+					{
+						enemy->Check(-0.1f * time);
+					}
+
+				}
+			}
+
+
+			if (m_finish.rect.intersects(enemy->GetHero().getGlobalBounds()) && !enemy->IsFinalState())
+			{
+				enemy->SetFinalState();
+				m_player.SetPlaceInFinal();
+
+			}
+
+
+			for (size_t i = 0; i < m_bonuses.size(); ++i)
+			{
+				if (enemy->GetRect().intersects(m_bonuses[i]->GetSprite().getGlobalBounds()))
+				{
+					m_bonuses.erase(m_bonuses.begin() + i);
+				}
+			}
+
+
+			for (auto elephant : m_elephants)
+			{
+				if ((enemy->GetRect().intersects(elephant->GetRectBonus()) && elephant->IsShow()) || enemy->GetRect().intersects(elephant->GetRect()))
+				{
+					enemy->SetProtection();
+				}
+			}
+
+			for (auto scroll : m_scrolls)
+			{
+				if (enemy->GetRect().intersects(scroll->GetSprite().getGlobalBounds()))
+				{
+					enemy->SetProtection();
+				}
+			}
+
+			for (auto cat : m_cats)
+			{
+				if ((enemy->GetRect().intersects(cat->GetRectBonus()) && cat->IsShow()) || enemy->GetRect().intersects(cat->GetRect()))
+				{
+					enemy->SetProtection();
 				}
 
 			}
-		}
 
-
-		if (m_finish.rect.intersects(enemy->GetHero().getGlobalBounds()) && !enemy->IsFinalState())
-		{
-			enemy->SetFinalState();
-			m_player.SetPlaceInFinal();
-
-		}
-
-
-		for (size_t i = 0; i < m_bonuses.size(); ++i)
-		{
-			if (enemy->GetRect().intersects(m_bonuses[i]->GetSprite().getGlobalBounds()))
-			{
-				m_bonuses.erase(m_bonuses.begin() + i);
-			}
+			enemy->SetPosition();
 		}
 
 
 		for (auto elephant : m_elephants)
 		{
-			if ((enemy->GetRect().intersects(elephant->GetRectBonus()) && elephant->IsShow()) || enemy->GetRect().intersects(elephant->GetRect()))
+			if (!(elephant->IsStop(m_player.GetPosition().y)))
 			{
-				enemy->SetProtection();
+				elephant->Update(time);
+				elephant->SetPosition();
+			}
+
+			if (m_player.GetRect().intersects(elephant->GetRectBonus()) && elephant->IsShow())
+			{
+				elephant->SetShow();
+				m_player.InitClock();
+				m_player.SetDelay();
+				m_player.UpdateTotal(100);
+			}
+
+		}
+
+
+		if (m_player.GetRect().intersects(m_finish.rect) && !m_player.IsFinalState())
+		{
+			m_player.SetFinalState();
+			m_player.SetPlaceInFinal();
+			m_player.UpdateTotal(210 * 1 / m_player.GetPlaceInFinal());
+			m_text.setString("Вы заняли " + std::to_string(m_player.GetPlaceInFinal()) + " место\n");
+		}
+
+		for (size_t i = 0; i < m_scrolls.size(); ++i)
+		{
+			if (m_player.GetRect().intersects(m_scrolls[i]->GetSprite().getGlobalBounds()))
+			{
+				m_scrolls.erase(m_scrolls.begin() + i);
+				m_player.SetNewMission();
+				//mission.PlaySound();
 			}
 		}
 
-		for (auto scroll : m_scrolls)
-		{
-			if (enemy->GetRect().intersects(scroll->GetSprite().getGlobalBounds()))
-			{
-				enemy->SetProtection();
-			}
-		}
+
 
 		for (auto cat : m_cats)
 		{
-			if ((enemy->GetRect().intersects(cat->GetRectBonus()) && cat->IsShow()) || enemy->GetRect().intersects(cat->GetRect()))
+			if (!(cat->IsStop(m_player.GetPosition().y)))
 			{
-				enemy->SetProtection();
+				cat->Update(time);
+				cat->SetPosition();
+			}
+
+			if (m_player.GetRect().intersects(cat->GetRectBonus()) && cat->IsShow())
+			{
+				cat->SetShow();
+				m_player.InitClock();
+				m_player.SetFreeze();
 			}
 
 		}
 
-		enemy->SetPosition();
-	}
-	
 
-	for (auto elephant : m_elephants)
+		CheckCollisionWithDonuts();
+
+
+		CheckCollisionWithPuddles();
+
+		m_player.SetPosition();
+		m_player.SetSpeed();
+		m_player.Freezing();
+
+
+		m_text.setPosition(180, m_player.GetPosition().y - 240);
+
+		m_view.setCenter(340, GetPlayer().GetPosition().y - 213);
+
+
+		m_frame.spriteFrame.setPosition(0, m_player.GetPosition().y - 470);
+		m_frame.text.setPosition(20, m_player.GetPosition().y - 460);
+		m_frame.text.setString("Очки: " + std::to_string(m_player.GetTotal()));
+		m_frame.spriteButton.setPosition(550, m_player.GetPosition().y - 460);
+
+	}
+	else
 	{
-		if (!(elephant->IsStop(m_player.GetPosition().y)))
-		{
-			elephant->Update(time);
-			elephant->SetPosition();
-		}
+		m_menu.Animation(time);
 
-		if (m_player.GetRect().intersects(elephant->GetRectBonus()) && elephant->IsShow())
-		{
-			elephant->SetShow();
-			m_player.InitClock();
-			m_player.SetDelay();
-			m_player.UpdateTotal(100);
-		}
 
 	}
-
-
-	if (m_player.GetRect().intersects(m_finish.rect) && !m_player.IsFinalState())
-	{
-		m_player.SetFinalState();
-		m_player.SetPlaceInFinal();
-		m_player.UpdateTotal(210 * 1 / m_player.GetPlaceInFinal());
-		m_text.setString("Вы заняли " + std::to_string(m_player.GetPlaceInFinal()) + " место\n");
-	}
-
-	for (size_t i = 0; i < m_scrolls.size(); ++i)
-	{
-		if (m_player.GetRect().intersects(m_scrolls[i]->GetSprite().getGlobalBounds()))
-		{
-			m_scrolls.erase(m_scrolls.begin() + i);
-			m_player.SetNewMission();
-			//mission.PlaySound();
-		}
-	}
-
-
-
-	for (auto cat : m_cats)
-	{
-		if (!(cat->IsStop(m_player.GetPosition().y)))
-		{
-			cat->Update(time);
-			cat->SetPosition();
-		}
-
-		if (m_player.GetRect().intersects(cat->GetRectBonus()) && cat->IsShow())
-		{
-			cat->SetShow();
-			m_player.InitClock();
-			m_player.SetFreeze();
-		}
-
-	}
-
-
-	CheckCollisionWithDonuts();
-
-
-	CheckCollisionWithPuddles();
-
-	m_player.SetPosition();
-	m_player.SetSpeed();
-	m_player.Freezing();
-
-
-	m_text.setPosition(180, m_player.GetPosition().y - 240);
-
-	m_view.setCenter(340, GetPlayer().GetPosition().y - 213);
-
-
-	m_frame.spriteFrame.setPosition(0, m_player.GetPosition().y - 470);
-	m_frame.text.setPosition(20, m_player.GetPosition().y - 460);
-	m_frame.text.setString("Очки: " + std::to_string(m_player.GetTotal()));
-	m_frame.spriteButton.setPosition(550, m_player.GetPosition().y - 460);
-
-
 }
 
-void CGame::Display(sf::RenderWindow & window)const
+void CGame::Display(sf::RenderWindow & window)
 {
 	window.setView(m_view);
 	window.clear(sf::Color::White);
-	GetLevel().Draw(window);
-
-	DrawDonuts(window);
-	DrawPuddles(window);
-	DrawScrolls(window);
-
-
-
-	for (auto elephant : m_elephants)
+	if (!m_menu.IsOpen())
 	{
-		window.draw(elephant->GetHero());
-		if (elephant->IsRun())
+
+
+		GetLevel().Draw(window);
+
+		DrawDonuts(window);
+		DrawPuddles(window);
+		DrawScrolls(window);
+
+
+
+		for (auto elephant : m_elephants)
 		{
-			window.draw(elephant->GetBonus());
+			window.draw(elephant->GetHero());
+			if (elephant->IsRun())
+			{
+				window.draw(elephant->GetBonus());
+			}
+		}
+
+
+
+		for (auto cat : m_cats)
+		{
+			window.draw(cat->GetHero());
+			if (cat->IsRun())
+			{
+				window.draw(cat->GetBonus());
+			}
+		}
+
+		DrawEnemies(window);
+
+		window.draw(GetPlayer().GetHero());
+
+		if (GetPlayer().IsJump())
+		{
+			window.draw(m_player.GetSpriteProtection());
+		}
+
+		if (m_player.IsFreeze())
+		{
+			window.draw(m_player.GetSpriteFreeze());
+		}
+
+
+		if (m_player.IsFinalState())
+		{
+			window.draw(m_text);
+			window.draw(m_frame.spriteButton);
+		}
+
+
+		window.draw(m_frame.spriteFrame);
+		window.draw(m_frame.text);
+
+	}
+	else
+	{
+		window.draw(m_menu.GetSprite());
+		window.draw(m_menu.GetSpriteAnimation());
+		window.draw(m_menu.GetButton());
+		if (sf::IntRect(570, 30, 91, 37).contains(sf::Mouse::getPosition(window)) &&
+			(sf::Mouse::isButtonPressed(sf::Mouse::Left)))
+		{
+			m_menu.SetOpen();
+			m_music.play();
 		}
 	}
-
-
-
-	for (auto cat : m_cats)
-	{
-		window.draw(cat->GetHero());
-		if (cat->IsRun())
-		{
-			window.draw(cat->GetBonus());
-		}
-	}
-
-	DrawEnemies(window);
-
-	window.draw(GetPlayer().GetHero());
-
-	if (GetPlayer().IsJump())
-	{
-		window.draw(m_player.GetSpriteProtection());
-	}
-
-	if (m_player.IsFreeze())
-	{
-		window.draw(m_player.GetSpriteFreeze());
-	}
-
-
-	if (m_player.IsFinalState())
-	{
-		window.draw(m_text);
-		window.draw(m_frame.spriteButton);
-	}
-
-
-	window.draw(m_frame.spriteFrame);
-	window.draw(m_frame.text);
-
-
 	window.display();
 }
 
