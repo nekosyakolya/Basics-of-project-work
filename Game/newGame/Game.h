@@ -29,11 +29,6 @@ class CGame
 public:
 	CGame();
 	void Initialisation();
-
-	Level GetLevel()const;
-	CPlayer GetPlayer()const;
-
-
 	void Update(float);
 	void Display(sf::RenderWindow &);
 
@@ -75,7 +70,15 @@ private:
 	void DrawEnemies(sf::RenderWindow &)const;
 	void DrawPuddles(sf::RenderWindow &)const;
 	void DrawScrolls(sf::RenderWindow &)const;
+	void DrawElephants(sf::RenderWindow &)const;
+	void DrawCats(sf::RenderWindow &)const;
+	void DrawPlayer(sf::RenderWindow &);
 
+	void DrawMenu(sf::RenderWindow &);
+	void DrawMenuMini(sf::RenderWindow &);
+
+	void DrawGame(sf::RenderWindow &);
+	void DrawGameMini(sf::RenderWindow &);
 	unsigned m_gameLevel;
 
 	std::map <unsigned, std::string> m_levelMap = { { 1, "resources/map.tmx" },{ 2, "resources/map2.tmx" } };

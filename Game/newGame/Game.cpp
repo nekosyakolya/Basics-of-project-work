@@ -133,17 +133,6 @@ void CGame::Initialisation()
 
 
 
-Level CGame::GetLevel()const
-{
-	return m_level;
-}
-
-CPlayer CGame::GetPlayer()const
-{
-	return m_player;
-}
-
-
 void CGame::UpdatePlayer(float time)
 {
 	m_player.Update(time);
@@ -336,6 +325,181 @@ void CGame::DrawScrolls(sf::RenderWindow &window) const
 	}
 }
 
+void CGame::DrawElephants(sf::RenderWindow &window) const
+{
+	for (auto elephant : m_elephants)
+	{
+		window.draw(elephant->GetHero());
+		if (elephant->IsRun())
+		{
+			window.draw(elephant->GetBonus());
+		}
+	}
+}
+
+void CGame::DrawCats(sf::RenderWindow &window) const
+{
+	for (auto cat : m_cats)
+	{
+		window.draw(cat->GetHero());
+		if (cat->IsRun())
+		{
+			window.draw(cat->GetBonus());
+		}
+	}
+}
+
+void CGame::DrawPlayer(sf::RenderWindow &window)
+{
+	window.draw(m_player.GetHero());
+
+	if (m_player.IsJump())
+	{
+		window.draw(m_player.GetSpriteProtection());
+	}
+
+	if (m_player.IsFreeze())
+	{
+		window.draw(m_player.GetSpriteFreeze());
+	}
+
+
+	if (m_player.IsFinalState())
+	{
+		window.draw(m_textResult);
+		window.draw(m_frame.spriteButton);
+
+		if (sf::FloatRect(550, 15, 60, 60).contains(static_cast<sf::Vector2f>(sf::Mouse::getPosition(window))) &&
+			(sf::Mouse::isButtonPressed(sf::Mouse::Left)))
+		{
+			++m_gameLevel;
+			ClearLevel();
+			InitLevel();
+
+		}
+	}
+
+}
+
+void CGame::DrawMenu(sf::RenderWindow &window)
+{
+	window.draw(m_menu.GetSprite());
+	window.draw(m_menu.GetSpriteAnimation());
+	window.draw(m_menu.GetButton());
+	if (sf::IntRect(570, 30, 91, 37).contains(sf::Mouse::getPosition(window)) &&
+		(sf::Mouse::isButtonPressed(sf::Mouse::Left)))
+	{
+		m_menu.SetOpen();
+		m_music.play();
+	}
+}
+
+void CGame::DrawMenuMini(sf::RenderWindow &window)
+{
+	m_view.setCenter(window.getSize().x / 2.0f + 5, window.getSize().y / 2.0f);
+	window.setView(m_view);
+
+	window.clear(sf::Color::White);
+
+	window.draw(m_miniGame.GetSprite());
+
+	window.draw(m_miniGame.GetTextMission());
+
+	window.draw(m_miniGame.GetSpriteMission());
+
+	if (sf::IntRect(270, 330, 151, 61).contains(sf::Mouse::getPosition(window)) &&
+		(sf::Mouse::isButtonPressed(sf::Mouse::Left)))
+	{
+		m_miniGame.SetNext();
+	}
+}
+
+void CGame::DrawGame(sf::RenderWindow &window)
+{
+	if (!m_player.IsNewMission())
+	{
+		m_level.Draw(window);
+		DrawDonuts(window);
+		DrawPuddles(window);
+		DrawScrolls(window);
+		DrawElephants(window);
+		DrawCats(window);
+		DrawEnemies(window);
+		DrawPlayer(window);
+		window.draw(m_frame.spriteFrame);
+		window.draw(m_frame.text);
+	}
+	else
+	{
+		DrawGameMini(window);
+	}
+}
+
+void CGame::DrawGameMini(sf::RenderWindow &window)
+{
+	if (m_miniGame.IsNext())
+	{
+		if (m_miniGame.GetTimeDelay() != 10)
+		{
+			m_view.setCenter(window.getSize().x / 2.0f, window.getSize().y / 2.0f);
+			window.setView(m_view);
+			window.clear(sf::Color::White);
+			m_miniGame.GetMap().Draw(window);
+			for (auto box : m_miniGame.m_boxes)
+			{
+				window.draw(box->sprite);
+			}
+			window.draw(m_miniGame.GetText());
+			window.draw(m_miniGame.m_player.sprite);
+			window.draw(m_miniGame.GetRestart());
+
+			if (sf::IntRect(10, 10, 91, 37).contains(sf::Mouse::getPosition(window)) &&
+				(sf::Mouse::isButtonPressed(sf::Mouse::Left)))
+			{
+				m_miniGame.Initialisation();
+			}
+		}
+		else
+		{
+			m_view.setCenter(window.getSize().x / 2.0f + 5, window.getSize().y / 2.0f);
+			window.setView(m_view);
+
+			window.clear(sf::Color::White);
+
+			window.draw(m_miniGame.GetSprite());
+
+			window.draw(m_miniGame.GetTextMission());
+
+			window.draw(m_miniGame.GetSpriteMission());
+
+			if (sf::IntRect(270, 330, 151, 61).contains(sf::Mouse::getPosition(window)) &&
+				(sf::Mouse::isButtonPressed(sf::Mouse::Left)))
+			{
+				m_player.SetNewMission();
+
+				if (m_miniGame.GetTimePlay() > 90)
+				{
+					m_player.ChangePosition();
+					m_player.UpdateTotal(-5);
+				}
+				else
+				{
+					m_player.UpdateDelta();
+					m_player.UpdateTotal(50);
+				}
+				m_miniGame.LevelUp();
+				m_miniGame.Initialisation();
+				m_miniGame.StopSound();
+				m_music.play();
+			}
+		}
+	}
+	else
+	{
+		DrawMenuMini(window);
+	}
+}
+
 void CGame::Update(float time)
 {
 
@@ -491,8 +655,8 @@ void CGame::Update(float time)
 
 
 			m_textResult.setPosition(180, m_player.GetPosition().y - 240);
-
-			m_view.setCenter(340, GetPlayer().GetPosition().y - 213);
+			
+			m_view.setCenter(340, m_player.GetPosition().y - 213);
 
 
 			m_frame.spriteFrame.setPosition(0, m_player.GetPosition().y - 470);
@@ -547,17 +711,11 @@ void CGame::Update(float time)
 					m_miniGame.ChangeButton();
 				}
 			}
-			else
-			{
-
-			}
 		}
 	}
 	else
 	{
 		m_menu.Animation(time);
-
-
 	}
 }
 
@@ -565,166 +723,7 @@ void CGame::Display(sf::RenderWindow & window)
 {
 	window.setView(m_view);
 	window.clear(sf::Color::White);
-	if (!m_menu.IsOpen())
-	{
-
-		if (!m_player.IsNewMission())
-		{
-			GetLevel().Draw(window);
-
-			DrawDonuts(window);
-			DrawPuddles(window);
-			DrawScrolls(window);
-
-
-
-			for (auto elephant : m_elephants)
-			{
-				window.draw(elephant->GetHero());
-				if (elephant->IsRun())
-				{
-					window.draw(elephant->GetBonus());
-				}
-			}
-
-
-
-			for (auto cat : m_cats)
-			{
-				window.draw(cat->GetHero());
-				if (cat->IsRun())
-				{
-					window.draw(cat->GetBonus());
-				}
-			}
-
-			DrawEnemies(window);
-
-			window.draw(GetPlayer().GetHero());
-
-			if (GetPlayer().IsJump())
-			{
-				window.draw(m_player.GetSpriteProtection());
-			}
-
-			if (m_player.IsFreeze())
-			{
-				window.draw(m_player.GetSpriteFreeze());
-			}
-
-
-			if (m_player.IsFinalState())
-			{
-				window.draw(m_textResult);
-				window.draw(m_frame.spriteButton);
-
-				if (sf::FloatRect(550, 15, 60, 60).contains(static_cast<sf::Vector2f>(sf::Mouse::getPosition(window))) &&
-					(sf::Mouse::isButtonPressed(sf::Mouse::Left)))
-				{
-					++m_gameLevel;
-					ClearLevel();
-					InitLevel();
-
-				}
-
-			}
-
-
-			window.draw(m_frame.spriteFrame);
-			window.draw(m_frame.text);
-		}
-		else
-		{
-			if (m_miniGame.IsNext())
-			{
-				if (m_miniGame.GetTimeDelay() != 10)
-				{
-					m_view.setCenter(window.getSize().x / 2.0f, window.getSize().y / 2.0f);
-					window.setView(m_view);
-					window.clear(sf::Color::White);
-					m_miniGame.GetMap().Draw(window);
-					for (auto box : m_miniGame.m_boxes)
-					{
-						window.draw(box->sprite);
-					}
-					window.draw(m_miniGame.GetText());
-					window.draw(m_miniGame.m_player.sprite);
-					window.draw(m_miniGame.GetRestart());
-
-					if (sf::IntRect(10, 10, 91, 37).contains(sf::Mouse::getPosition(window)) &&
-						(sf::Mouse::isButtonPressed(sf::Mouse::Left)))
-					{
-						m_miniGame.Initialisation();
-					}
-				}
-				else //menu-mini
-				{
-					m_view.setCenter(window.getSize().x / 2.0f + 5, window.getSize().y / 2.0f);
-					window.setView(m_view);
-
-					window.clear(sf::Color::White);
-
-					window.draw(m_miniGame.GetSprite());
-
-					window.draw(m_miniGame.GetTextMission());
-
-					window.draw(m_miniGame.GetSpriteMission());
-
-					if (sf::IntRect(270, 330, 151, 61).contains(sf::Mouse::getPosition(window)) &&
-						(sf::Mouse::isButtonPressed(sf::Mouse::Left)))
-					{
-						m_player.SetNewMission();
-
-						if (m_miniGame.GetTimePlay() > 90)
-						{
-							m_player.ChangePosition();
-							m_player.UpdateTotal(-5);
-						}
-						else
-						{
-							m_player.UpdateDelta();
-							m_player.UpdateTotal(50);
-						}
-						m_miniGame.LevelUp();
-						m_miniGame.Initialisation();
-						m_miniGame.StopSound();
-						m_music.play();
-					}
-				}
-			}
-			else
-			{
-				m_view.setCenter(window.getSize().x / 2.0f + 5, window.getSize().y / 2.0f);
-				window.setView(m_view);
-
-				window.clear(sf::Color::White);
-
-				window.draw(m_miniGame.GetSprite());
-
-				window.draw(m_miniGame.GetTextMission());
-
-				window.draw(m_miniGame.GetSpriteMission());
-
-				if (sf::IntRect(270, 330, 151, 61).contains(sf::Mouse::getPosition(window)) &&
-					(sf::Mouse::isButtonPressed(sf::Mouse::Left)))
-				{
-					m_miniGame.SetNext();
-				}
-			}
-		}
-	}
-	else
-	{
-		window.draw(m_menu.GetSprite());
-		window.draw(m_menu.GetSpriteAnimation());
-		window.draw(m_menu.GetButton());
-		if (sf::IntRect(570, 30, 91, 37).contains(sf::Mouse::getPosition(window)) &&
-			(sf::Mouse::isButtonPressed(sf::Mouse::Left)))
-		{
-			m_menu.SetOpen();
-			m_music.play();
-		}
-	}
+	(!m_menu.IsOpen()) ? DrawGame(window) : DrawMenu(window);
 	window.display();
 }
 
