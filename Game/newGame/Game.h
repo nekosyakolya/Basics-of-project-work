@@ -67,6 +67,10 @@ private:
 	void CheckCollisionWithFinish();
 	void CheckCollisionWithElephantes(float time);
 	void CheckCollisionWithCats(float time);
+	void CheckCollisionBetweenPlayerAndEnemy(float time, CEnemy *enemy);
+	void CheckCollisionBetweenFinishAndEnemy(CEnemy *enemy);
+	void CheckCollisionBetweenBonusesAndEnemy(CEnemy *enemy);
+	void CheckCollisionBetweenEnemies(CEnemy *enemy);
 
 	void UpdatePlayer(float);
 	void UpdateFrame();

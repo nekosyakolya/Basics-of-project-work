@@ -152,74 +152,10 @@ void CGame::UpdateEnemy(float time)
 	for (auto enemy : m_enemies)
 	{
 		enemy->Update(time);
-
-		if (m_player.GetRect().intersects(enemy->GetHero().getGlobalBounds()))
-		{
-			if (m_player.GetOffset().x < 0)
-			{
-				m_player.UpdatePosition(enemy->GetPosition().x + 40);
-				enemy->UpdatePosition(-0.1f * time);
-			}
-			if (m_player.GetOffset().x > 0)
-			{
-				m_player.UpdatePosition(enemy->GetPosition().x - 40);
-				enemy->UpdatePosition(0.1f * time);
-			}
-
-
-			if (m_player.GetOffset().x == 0)
-			{
-				if (!enemy->Check(0.1f * time))
-				{
-					enemy->Check(-0.1f * time);
-				}
-
-			}
-		}
-
-
-		if (m_finish.rect.intersects(enemy->GetHero().getGlobalBounds()) && !enemy->IsFinalState())
-		{
-			enemy->SetFinalState();
-			m_player.SetPlaceInFinal();
-
-		}
-
-
-		for (size_t i = 0; i < m_bonuses.size(); ++i)
-		{
-			if (enemy->GetRect().intersects(m_bonuses[i]->GetSprite().getGlobalBounds()))
-			{
-				m_bonuses.erase(m_bonuses.begin() + i);
-			}
-		}
-
-
-		for (auto elephant : m_elephants)
-		{
-			if ((enemy->GetRect().intersects(elephant->GetRectBonus()) && elephant->IsShow()) || enemy->GetRect().intersects(elephant->GetRect()))
-			{
-				enemy->SetProtection();
-			}
-		}
-
-		for (auto scroll : m_scrolls)
-		{
-			if (enemy->GetRect().intersects(scroll->GetSprite().getGlobalBounds()))
-			{
-				enemy->SetProtection();
-			}
-		}
-
-		for (auto cat : m_cats)
-		{
-			if ((enemy->GetRect().intersects(cat->GetRectBonus()) && cat->IsShow()) || enemy->GetRect().intersects(cat->GetRect()))
-			{
-				enemy->SetProtection();
-			}
-
-		}
-
+		CheckCollisionBetweenPlayerAndEnemy(time, &(*enemy));
+		CheckCollisionBetweenFinishAndEnemy(&(*enemy));
+		CheckCollisionBetweenBonusesAndEnemy(&(*enemy));
+		CheckCollisionBetweenEnemies(&(*enemy));
 		enemy->SetPosition();
 	}
 }
@@ -273,8 +209,6 @@ void CGame::UpdateGameMini(float time)
 			if (finishedBoxesCount == m_miniGame.m_boxes.size() || m_miniGame.GetTimePlay() > 90)
 			{
 				m_miniGame.SetTimeDelay();
-
-
 			}
 
 		}
@@ -502,6 +436,84 @@ void CGame::CheckCollisionWithCats(float time)
 			cat->SetShow();
 			m_player.InitClock();
 			m_player.SetFreeze();
+		}
+
+	}
+}
+
+void CGame::CheckCollisionBetweenPlayerAndEnemy(float time, CEnemy *enemy)
+{
+	if (m_player.GetRect().intersects(enemy->GetHero().getGlobalBounds()))
+	{
+		if (m_player.GetOffset().x < 0)
+		{
+			m_player.UpdatePosition(enemy->GetPosition().x + 40);
+			enemy->UpdatePosition(-0.1f * time);
+		}
+		if (m_player.GetOffset().x > 0)
+		{
+			m_player.UpdatePosition(enemy->GetPosition().x - 40);
+			enemy->UpdatePosition(0.1f * time);
+		}
+
+
+		if (m_player.GetOffset().x == 0)
+		{
+			if (!enemy->Check(0.1f * time))
+			{
+				enemy->Check(-0.1f * time);
+			}
+
+		}
+	}
+}
+
+void CGame::CheckCollisionBetweenFinishAndEnemy(CEnemy * enemy)
+{
+	if (m_finish.rect.intersects(enemy->GetHero().getGlobalBounds()) && !enemy->IsFinalState())
+	{
+		enemy->SetFinalState();
+		m_player.SetPlaceInFinal();
+
+	}
+}
+
+void CGame::CheckCollisionBetweenBonusesAndEnemy(CEnemy * enemy)
+{
+	for (size_t i = 0; i < m_bonuses.size(); ++i)
+	{
+		if (enemy->GetRect().intersects(m_bonuses[i]->GetSprite().getGlobalBounds()))
+		{
+			m_bonuses.erase(m_bonuses.begin() + i);
+		}
+	}
+
+	for (auto scroll : m_scrolls)
+	{
+		if (enemy->GetRect().intersects(scroll->GetSprite().getGlobalBounds()))
+		{
+			enemy->SetProtection();
+		}
+	}
+
+}
+
+void CGame::CheckCollisionBetweenEnemies(CEnemy * enemy)
+{
+	for (auto elephant : m_elephants)
+	{
+		if ((enemy->GetRect().intersects(elephant->GetRectBonus()) && elephant->IsShow()) || enemy->GetRect().intersects(elephant->GetRect()))
+		{
+			enemy->SetProtection();
+		}
+	}
+
+
+	for (auto cat : m_cats)
+	{
+		if ((enemy->GetRect().intersects(cat->GetRectBonus()) && cat->IsShow()) || enemy->GetRect().intersects(cat->GetRect()))
+		{
+			enemy->SetProtection();
 		}
 
 	}
