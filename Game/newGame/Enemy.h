@@ -6,12 +6,11 @@ class CEnemy :
 	public CHero
 {
 public:
-	CEnemy(const sf::Vector2f &position, float delta);
+	CEnemy(const sf::Vector2f &position, float delta, std::string &resources);
 	void Update(float time) override;
 	void UpdatePosition(float dx) override;
 
 	bool Check(float dx);
-
 
 	sf::Sprite GetRectProtection()const;
 

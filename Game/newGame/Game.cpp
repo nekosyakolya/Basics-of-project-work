@@ -188,7 +188,7 @@ void CGame::InitEnemies()
 		float timeSpeed = static_cast<float>(clock.getElapsedTime().asMicroseconds());
 		clock.restart();
 		timeSpeed = timeSpeed / 10000000;
-		m_enemies.push_back(std::shared_ptr<CEnemy>(new CEnemy(sf::Vector2f(currEnemy.rect.left, currEnemy.rect.top), timeSpeed)));
+		m_enemies.push_back(std::shared_ptr<CEnemy>(new CEnemy(sf::Vector2f(currEnemy.rect.left, currEnemy.rect.top), timeSpeed, m_enemyMap.find(m_gameLevel)->second)));
 	}
 	for (auto enemy : m_enemies)
 	{

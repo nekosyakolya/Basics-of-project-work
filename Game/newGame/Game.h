@@ -95,6 +95,7 @@ private:
 	unsigned m_gameLevel;
 
 	std::map <unsigned, std::string> m_levelMap = { { 1, "resources/map.tmx" },{ 2, "resources/map2.tmx" } };
+	std::map <unsigned, std::string> m_enemyMap = { { 1, "resources/slon.png" },{ 2, "resources/frog.png" } };
 
 };
 

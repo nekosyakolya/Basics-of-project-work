@@ -2,10 +2,10 @@
 #include "Enemy.h"
 
 
-CEnemy::CEnemy(const sf::Vector2f &position, float delta)
+CEnemy::CEnemy(const sf::Vector2f &position, float delta, std::string &resources)
 {
 	InitHero(position);
-	m_image.loadFromFile("resources/slon.png");
+	m_image.loadFromFile(resources);
 
 
 	m_direction = Direction::UP;
@@ -96,6 +96,8 @@ bool CEnemy::Check(float dx)
 	}
 	return true;
 }
+
+
 
 sf::Sprite CEnemy::GetRectProtection() const
 {
