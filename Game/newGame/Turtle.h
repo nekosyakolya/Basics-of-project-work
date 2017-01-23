@@ -27,12 +27,24 @@ public:
 
 	void Update(float time);
 
+	void SetDelay();
+	void UpdateDelay();
+	void InitClock();
 	bool IsShow();
+
+	bool GetDelay()const;
+
+
+	sf::Sprite GetAnimation();
 	~CTurtle();
 private:
 	sf::Image m_image;
 	sf::Texture m_texture;
 	sf::Sprite m_sprite;
+
+	sf::Image m_imageAnimation;
+	sf::Texture m_textureAnimation;
+	sf::Sprite m_spriteAnimation;
 
 	sf::Sprite m_spriteBonus;
 
@@ -50,5 +62,11 @@ private:
 	bool m_isCollision;
 	void CheckCollision(float dx, float dy);
 	bool m_isShow;
+
+
+
+	sf::Clock m_clock;
+	unsigned m_time;
+	bool m_delay;
 
 };

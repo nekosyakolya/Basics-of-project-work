@@ -3,6 +3,16 @@
 
 
 
+bool CTurtle::GetDelay() const
+{
+	return m_delay;
+}
+
+sf::Sprite CTurtle::GetAnimation()
+{
+	return m_spriteAnimation;
+}
+
 CTurtle::~CTurtle()
 {
 }
@@ -36,9 +46,17 @@ CTurtle::CTurtle(const sf::Vector2f &position) :
 
 	m_spriteBonus.setTextureRect(sf::IntRect(static_cast<int>(positionSpriteBonus.x), static_cast<int>(positionSpriteBonus.y), 40, 40));
 
+	m_imageAnimation.loadFromFile("resources/turtle-frame.png");
+	m_textureAnimation.loadFromImage(m_imageAnimation);
+
+	m_spriteAnimation.setTexture(m_textureAnimation);
+
+
+
 	m_row = 0;
 	m_isCollision = false;
 	m_isShow = false;
+	m_delay = false;
 }
 
 sf::Sprite CTurtle::GetHero() const
@@ -115,6 +133,31 @@ void CTurtle::Update(float time)
 	CheckCollision(m_offset.x, 0);
 
 	m_sprite.setTextureRect(sf::IntRect(40 * static_cast<int>(m_currentFrame), m_row * 40, 40, 40));
+}
+
+void CTurtle::SetDelay()
+{
+	m_delay = true;
+}
+
+void CTurtle::UpdateDelay()
+{
+	if (m_delay)
+	{
+		if (m_time >= 3)
+		{
+			m_clock.restart();
+			m_delay = false;
+		}
+		m_time = static_cast<unsigned>(m_clock.getElapsedTime().asSeconds());
+	}
+}
+
+void CTurtle::InitClock()
+{
+	m_clock.restart();
+	m_time = static_cast<unsigned>(m_clock.getElapsedTime().asSeconds());
+
 }
 
 

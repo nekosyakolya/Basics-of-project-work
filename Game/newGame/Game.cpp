@@ -361,10 +361,15 @@ void CGame::CheckCollisionWithTurtles(float time)
 		{
 			turtle->SetShow();
 			m_player.UpdateTotal(-m_player.GetTotal());
+			turtle->SetDelay();
+			turtle->InitClock();
 
+			//sound play
 		}
 
+		turtle->UpdateDelay();
 	}
+	
 }
 
 
@@ -526,6 +531,10 @@ void CGame::DrawCats(sf::RenderWindow &window) const
 		if (turtle->IsRun())
 		{
 			window.draw(turtle->GetBonus());
+		}
+		if (turtle->GetDelay())
+		{
+			window.draw(turtle->GetAnimation());
 		}
 	}
 }
