@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClInclude Include="Bonus.h" />
     <ClInclude Include="Donut.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Hero.h" />
     <ClInclude Include="level.h" />
@@ -163,6 +164,7 @@
   <ItemGroup>
     <ClCompile Include="Bonus.cpp" />
     <ClCompile Include="Donut.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Hero.cpp" />
     <ClCompile Include="level.cpp" />
