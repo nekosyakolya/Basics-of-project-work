@@ -4,6 +4,8 @@
 #include "Player.h"
 #include "Donut.h"
 #include "Enemy.h"
+#include "Puddle.h"
+
 
 #include <memory>
 
@@ -30,11 +32,17 @@ private:
 	
 	std::vector<std::shared_ptr<CDonut>> m_bonuses;
 	std::vector<std::shared_ptr<CEnemy>> m_enemies;
+	std::vector<std::shared_ptr<CPuddle>> m_puddles;
+
 
 	void CheckCollisionWithDonuts();
+	void CheckCollisionWithPuddles();
+
 	void UpdatePlayer(float);
 
-	void DisplayDonuts(sf::RenderWindow &)const;
+	void DrawDonuts(sf::RenderWindow &)const;
+	void DrawEnemies(sf::RenderWindow &)const;
+
 
 };
 

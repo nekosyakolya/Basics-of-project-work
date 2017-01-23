@@ -45,6 +45,15 @@ void CGame::Initialisation()
 		enemy->Init(m_level);
 	}
 
+
+
+	std::vector<Object> puddleStartPos = m_level.GetObjects("puddle");
+
+	for (auto currPuddle : puddleStartPos)
+	{
+		m_puddles.push_back(std::shared_ptr<CPuddle>(new CPuddle(sf::Vector2f(currPuddle.rect.left, currPuddle.rect.top))));
+	}
+
 }
 
 
@@ -80,12 +89,43 @@ void CGame::CheckCollisionWithDonuts()
 	}
 }
 
-void CGame::DisplayDonuts(sf::RenderWindow & window)const
+void CGame::CheckCollisionWithPuddles()
+{
+
+	for (auto puddle : m_puddles)
+	{
+		if (m_player.GetRect().intersects(puddle->GetSprite().getGlobalBounds()) &&
+			!m_player.IsJump() && !puddle->IsVisited())
+		{
+			m_player.ChangePosition();
+			m_player.UpdateTotal(-5);
+			puddle->PlaySound();
+			puddle->SetVisited();
+		}
+	}
+}
+
+void CGame::DrawDonuts(sf::RenderWindow & window)const
 {
 	for (auto bonus : m_bonuses)
 	{
 		window.draw(bonus->GetSprite());
 	}
+}
+
+void CGame::DrawEnemies(sf::RenderWindow &window) const
+{
+
+	for (auto enemy : m_enemies)
+	{
+		window.draw(enemy->GetHero());
+
+		if (enemy->IsJump())
+		{
+			window.draw(enemy->GetRectProtection());
+		}
+	}
+
 }
 
 void CGame::Update(float time)
@@ -134,9 +174,10 @@ void CGame::Update(float time)
 	}
 
 
-
 	CheckCollisionWithDonuts();
 
+
+	CheckCollisionWithPuddles();
 
 	m_player.SetPosition();
 	m_player.SetSpeed();
@@ -155,20 +196,13 @@ void CGame::Display(sf::RenderWindow & window)const
 	window.clear(sf::Color::White);
 	GetLevel().Draw(window);
 
-	DisplayDonuts(window);
+	DrawDonuts(window);
+	DrawEnemies(window);
 
-
-	for (auto enemy : m_enemies)
+	for (auto puddle : m_puddles)
 	{
-		window.draw(enemy->GetHero());
-
-		if (enemy->IsJump())
-		{
-			window.draw(enemy->GetRectProtection());
-		}
+		window.draw(puddle->GetSprite());
 	}
-
-
 
 	window.draw(GetPlayer().GetHero());
 
@@ -181,10 +215,6 @@ void CGame::Display(sf::RenderWindow & window)const
 	{
 		window.draw(m_player.GetSpriteFreeze());
 	}
-
-
-
-
 	window.display();
 }
 

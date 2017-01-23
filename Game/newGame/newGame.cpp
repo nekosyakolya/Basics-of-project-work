@@ -28,7 +28,7 @@ void EnterGameLoop(CGame &game, sf::RenderWindow &window, sf::Clock &clock)
 	{
 		float time = static_cast<float>(clock.getElapsedTime().asMicroseconds());
 		clock.restart();
-		time = time / 800;
+		time = time / 1000;
 
 
 
