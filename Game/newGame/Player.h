@@ -43,9 +43,6 @@ public:
 
 	bool IsFreeze()const;
 
-	unsigned GetLevel();
-	void SetLevel();
-
 	void Initialisation();
 
 	void InitPlayer(const sf::Vector2f &position);
@@ -78,7 +75,5 @@ private:
 	int m_total;
 
 	bool m_freeze;
-
-	unsigned m_level;
 };
 

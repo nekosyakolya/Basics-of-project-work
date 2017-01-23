@@ -9,6 +9,7 @@
 #include "Elephant.h"
 #include "Cat.h"
 #include "MainMenu.h"
+#include "MiniGame.h"
 
 
 
@@ -42,6 +43,8 @@ private:
 	Level m_level;
 	CPlayer m_player;
 	CMainMenu m_menu;
+	CMiniGame m_miniGame;
+
 	sf::View m_view;
 	sf::Text m_text;
 	sf::Font m_font;
@@ -68,6 +71,9 @@ private:
 	void DrawPuddles(sf::RenderWindow &)const;
 	void DrawScrolls(sf::RenderWindow &)const;
 
+	unsigned m_gameLevel;
+
+	std::map <unsigned, std::string> m_levelMap = { { 1, "resources/map.tmx" },{ 2, "resources/map2.tmx" } };
 
 };
 

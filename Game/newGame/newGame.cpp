@@ -1,11 +1,9 @@
-// newGame.cpp: определяет точку входа для консольного приложения.
-//
+
 
 #include "stdafx.h"
 #include "level.h"
 
 #include <SFML/Audio.hpp>
-
 
 
 void HandleEvents(sf::RenderWindow &window)
@@ -29,13 +27,9 @@ void EnterGameLoop(CGame &game, sf::RenderWindow &window, sf::Clock &clock)
 		float time = static_cast<float>(clock.getElapsedTime().asMicroseconds());
 		clock.restart();
 		time = time / 1000;
-
-
-
 		HandleEvents(window);
 
 		game.Update(time);
-
 		game.Display(window);
 	}
 

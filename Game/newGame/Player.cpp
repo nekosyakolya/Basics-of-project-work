@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Player.h"
-#include <iostream>
 
 void CPlayer::GetDirection()
 {
@@ -164,15 +163,7 @@ bool CPlayer::IsFreeze() const
 	return m_freeze;
 }
 
-unsigned CPlayer::GetLevel()
-{
-	return m_level;
-}
 
-void CPlayer::SetLevel()
-{
-	++m_level;
-}
 
 void CPlayer::Initialisation()
 {
@@ -183,7 +174,6 @@ void CPlayer::Initialisation()
 	m_delta = -0.1f;
 	m_currentFrame = 0.0;
 	m_time = 0;
-	m_level = 1;
 	m_freeze = false;
 	m_direction = Direction::UP;
 	m_offset = sf::Vector2f(0, 0);
