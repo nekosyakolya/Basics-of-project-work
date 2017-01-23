@@ -10,6 +10,7 @@
 #include "Cat.h"
 #include "MainMenu.h"
 #include "MiniGame.h"
+#include "Turtle.h"
 
 
 
@@ -52,6 +53,8 @@ private:
 	std::vector<std::shared_ptr<CScroll>> m_scrolls;
 	std::vector<std::shared_ptr<CElephant>> m_elephants;
 	std::vector<std::shared_ptr<CCat>> m_cats;
+	std::vector<std::shared_ptr<CTurtle>> m_turtles;
+
 
 	void InitFrame();
 	void InitText();
@@ -67,6 +70,7 @@ private:
 	void CheckCollisionWithFinish();
 	void CheckCollisionWithElephantes(float time);
 	void CheckCollisionWithCats(float time);
+	void CGame::CheckCollisionWithTurtles(float time);
 	void CheckCollisionBetweenPlayerAndEnemy(float time, CEnemy *enemy);
 	void CheckCollisionBetweenFinishAndEnemy(CEnemy *enemy);
 	void CheckCollisionBetweenBonusesAndEnemy(CEnemy *enemy);

@@ -62,6 +62,7 @@ void CGame::UpdateGame(float time)
 	CheckCollisionWithFinish();
 	CheckCollisionWithScrolls();
 	CheckCollisionWithCats(time);
+	CheckCollisionWithTurtles(time);
 	CheckCollisionWithDonuts();
 	CheckCollisionWithPuddles();
 
@@ -217,6 +218,16 @@ void CGame::InitEnemies()
 	}
 
 
+	std::vector<Object> turtleStartPos = m_level.GetObjects("turtle");
+	for (auto currTurtle : turtleStartPos)
+	{
+		m_turtles.push_back(std::shared_ptr<CTurtle>(new CTurtle(sf::Vector2f(currTurtle.rect.left, currTurtle.rect.top))));
+	}
+	for (auto turtle : m_turtles)
+	{
+		turtle->Init(m_level);
+	}
+
 }
 
 void CGame::InitLevel()
@@ -236,6 +247,7 @@ void CGame::ClearLevel()
 	m_puddles.clear();
 	m_cats.clear();
 	m_elephants.clear();
+	m_turtles.clear();
 }
 
 
@@ -334,6 +346,28 @@ void CGame::CheckCollisionWithCats(float time)
 	}
 }
 
+
+void CGame::CheckCollisionWithTurtles(float time)
+{
+	for (auto turtle : m_turtles)
+	{
+		if (!(turtle->IsStop(m_player.GetPosition().y)))
+		{
+			turtle->Update(time);
+			turtle->SetPosition();
+		}
+
+		if (m_player.GetRect().intersects(turtle->GetRectBonus()) && turtle->IsShow())
+		{
+			turtle->SetShow();
+			m_player.InitClock();
+			m_player.SetFreeze();
+		}
+
+	}
+}
+
+
 void CGame::CheckCollisionBetweenPlayerAndEnemy(float time, CEnemy *enemy)
 {
 	if (m_player.GetRect().intersects(enemy->GetHero().getGlobalBounds()))
@@ -411,6 +445,16 @@ void CGame::CheckCollisionBetweenEnemies(CEnemy * enemy)
 		}
 
 	}
+
+
+	for (auto turtle : m_turtles)
+	{
+		if ((enemy->GetRect().intersects(turtle->GetRectBonus()) && turtle->IsShow()) || enemy->GetRect().intersects(turtle->GetRect()))
+		{
+			enemy->SetProtection();
+		}
+
+	}
 }
 
 void CGame::DrawDonuts(sf::RenderWindow & window)const
@@ -472,6 +516,16 @@ void CGame::DrawCats(sf::RenderWindow &window) const
 		if (cat->IsRun())
 		{
 			window.draw(cat->GetBonus());
+		}
+	}
+
+
+	for (auto turtle : m_turtles)
+	{
+		window.draw(turtle->GetHero());
+		if (turtle->IsRun())
+		{
+			window.draw(turtle->GetBonus());
 		}
 	}
 }

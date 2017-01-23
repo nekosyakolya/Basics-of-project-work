@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="30" height="150" tilewidth="40" tileheight="40" nextobjectid="29">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="30" height="150" tilewidth="40" tileheight="40" nextobjectid="31">
  <tileset firstgid="1" name="map2" tilewidth="40" tileheight="40" tilecount="35" columns="5">
   <image source="map2.png" width="200" height="300"/>
  </tileset>
@@ -4545,6 +4545,8 @@
  </objectgroup>
  <objectgroup name="cat">
   <object id="25" name="elephant" x="40" y="3799" width="40" height="40"/>
+  <object id="29" name="turtle" x="40" y="4360" width="40" height="40"/>
+  <object id="30" name="turtleBonuses" x="200" y="4360" width="40" height="40"/>
  </objectgroup>
  <objectgroup name="blackCat">
   <object id="28" name="blackCat" x="600" y="1480" width="40" height="40"/>
