@@ -4547,7 +4547,7 @@
   <object id="29" name="puddle" x="401" y="3280" width="58" height="32"/>
  </objectgroup>
  <objectgroup name="cats">
-  <object id="30" name="cat" x="80" y="5200" width="40" height="40"/>
+  <object id="30" name="elephant" x="80" y="5200" width="40" height="40"/>
  </objectgroup>
  <objectgroup name="slonBonuses">
   <object id="31" name="slonBonuses" x="280" y="5198" width="40" height="40"/>

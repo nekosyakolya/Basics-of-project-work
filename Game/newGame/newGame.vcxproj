@@ -150,13 +150,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bonus.h" />
+    <ClInclude Include="Cat.h" />
     <ClInclude Include="Donut.h" />
+    <ClInclude Include="Elephant.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Hero.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Puddle.h" />
+    <ClInclude Include="Scroll.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="tinystr.h" />
@@ -164,7 +167,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bonus.cpp" />
+    <ClCompile Include="Cat.cpp" />
     <ClCompile Include="Donut.cpp" />
+    <ClCompile Include="Elephant.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Hero.cpp" />
@@ -172,6 +177,7 @@
     <ClCompile Include="newGame.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Puddle.cpp" />
+    <ClCompile Include="Scroll.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
