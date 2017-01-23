@@ -13,6 +13,8 @@
 #include "Game.h"
 
 #include <SFML/Graphics.hpp>
+#include "Donut.h"
+#include <memory>
 
 
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы

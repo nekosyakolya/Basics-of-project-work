@@ -8,17 +8,6 @@
 
 
 
-void Display(CGame &game, sf::RenderWindow &window)
-{
-	window.setView(game.view);
-
-	window.clear(sf::Color::White);
-	game.GetLevel().Draw(window);
-
-	window.draw(game.GetPlayer().GetHero());
-	window.display();
-}
-
 void HandleEvents(sf::RenderWindow &window)
 {
 	sf::Event event;
@@ -45,9 +34,9 @@ void EnterGameLoop(CGame &game, sf::RenderWindow &window, sf::Clock &clock)
 
 		HandleEvents(window);
 
-		game.UpdatePlayer(time);
-		game.view.setCenter(340, game.GetPlayer().GetPosition().y - 213);
-		Display(game, window);
+		game.Update(time);
+
+		game.Display(window);
 	}
 
 }
@@ -59,8 +48,6 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(680, 500), "Game", sf::Style::Close, settings);
 
 	CGame game;
-
-	game.view.reset(sf::FloatRect(0, 0, 680, 500));
 
 	game.Initialisation();
 
