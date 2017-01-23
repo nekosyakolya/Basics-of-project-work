@@ -63,8 +63,16 @@ private:
 
 	void CheckCollisionWithDonuts();
 	void CheckCollisionWithPuddles();
+	void CheckCollisionWithScrolls();
+	void CheckCollisionWithFinish();
+	void CheckCollisionWithElephantes(float time);
+	void CheckCollisionWithCats(float time);
 
 	void UpdatePlayer(float);
+	void UpdateFrame();
+	void UpdateEnemy(float);
+	void UpdateGame(float);
+	void UpdateGameMini(float);
 
 	void DrawDonuts(sf::RenderWindow &)const;
 	void DrawEnemies(sf::RenderWindow &)const;

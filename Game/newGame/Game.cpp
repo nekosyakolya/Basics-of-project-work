@@ -139,6 +139,162 @@ void CGame::UpdatePlayer(float time)
 
 }
 
+void CGame::UpdateFrame()
+{
+	m_frame.spriteFrame.setPosition(0, m_player.GetPosition().y - 470);
+	m_frame.text.setPosition(20, m_player.GetPosition().y - 460);
+	m_frame.text.setString("Очки: " + std::to_string(m_player.GetTotal()));
+	m_frame.spriteButton.setPosition(550, m_player.GetPosition().y - 460);
+}
+
+void CGame::UpdateEnemy(float time)
+{
+	for (auto enemy : m_enemies)
+	{
+		enemy->Update(time);
+
+		if (m_player.GetRect().intersects(enemy->GetHero().getGlobalBounds()))
+		{
+			if (m_player.GetOffset().x < 0)
+			{
+				m_player.UpdatePosition(enemy->GetPosition().x + 40);
+				enemy->UpdatePosition(-0.1f * time);
+			}
+			if (m_player.GetOffset().x > 0)
+			{
+				m_player.UpdatePosition(enemy->GetPosition().x - 40);
+				enemy->UpdatePosition(0.1f * time);
+			}
+
+
+			if (m_player.GetOffset().x == 0)
+			{
+				if (!enemy->Check(0.1f * time))
+				{
+					enemy->Check(-0.1f * time);
+				}
+
+			}
+		}
+
+
+		if (m_finish.rect.intersects(enemy->GetHero().getGlobalBounds()) && !enemy->IsFinalState())
+		{
+			enemy->SetFinalState();
+			m_player.SetPlaceInFinal();
+
+		}
+
+
+		for (size_t i = 0; i < m_bonuses.size(); ++i)
+		{
+			if (enemy->GetRect().intersects(m_bonuses[i]->GetSprite().getGlobalBounds()))
+			{
+				m_bonuses.erase(m_bonuses.begin() + i);
+			}
+		}
+
+
+		for (auto elephant : m_elephants)
+		{
+			if ((enemy->GetRect().intersects(elephant->GetRectBonus()) && elephant->IsShow()) || enemy->GetRect().intersects(elephant->GetRect()))
+			{
+				enemy->SetProtection();
+			}
+		}
+
+		for (auto scroll : m_scrolls)
+		{
+			if (enemy->GetRect().intersects(scroll->GetSprite().getGlobalBounds()))
+			{
+				enemy->SetProtection();
+			}
+		}
+
+		for (auto cat : m_cats)
+		{
+			if ((enemy->GetRect().intersects(cat->GetRectBonus()) && cat->IsShow()) || enemy->GetRect().intersects(cat->GetRect()))
+			{
+				enemy->SetProtection();
+			}
+
+		}
+
+		enemy->SetPosition();
+	}
+}
+
+void CGame::UpdateGame(float time)
+{
+	UpdatePlayer(time);
+	UpdateEnemy(time);
+
+	CheckCollisionWithElephantes(time);
+	CheckCollisionWithFinish();
+	CheckCollisionWithScrolls();
+	CheckCollisionWithCats(time);
+	CheckCollisionWithDonuts();
+	CheckCollisionWithPuddles();
+
+	m_player.SetPosition();
+	m_player.SetSpeed();
+	m_player.Freezing();
+
+
+	m_textResult.setPosition(180, m_player.GetPosition().y - 240);
+	m_view.setCenter(340, m_player.GetPosition().y - 213);
+
+	UpdateFrame();
+}
+
+void CGame::UpdateGameMini(float time)
+{
+	if (m_miniGame.IsNext())
+	{
+		if (m_miniGame.GetTimeDelay() != 10)
+		{
+			m_miniGame.SetString();
+
+			m_miniGame.m_player.Update(time);
+
+			CheckCollisionMini(m_miniGame.m_boxes, m_miniGame.m_player, time);
+			m_miniGame.m_player.sprite.setPosition(m_miniGame.m_player.position);
+
+
+			size_t finishedBoxesCount = 0;
+			for (auto box : m_miniGame.m_boxes)
+			{
+				if (box->isStateFinal)
+				{
+					++finishedBoxesCount;
+				}
+			}
+
+			if (finishedBoxesCount == m_miniGame.m_boxes.size() || m_miniGame.GetTimePlay() > 90)
+			{
+				m_miniGame.SetTimeDelay();
+
+
+			}
+
+		}
+		else
+		{
+			std::string result = "";
+			if (m_miniGame.GetTimePlay() > 90)
+			{
+				result = "Вы проиграли - ваша скорость упадет\n";
+			}
+			else
+			{
+				result = "Вы выиграли - ваша скорость вырастет\n";
+			}
+			m_miniGame.SetText(result + "Вперед,в игру!");
+			m_miniGame.ChangeButton();
+		}
+	}
+}
+
 void CGame::InitFrame()
 {
 	m_frame.textureFrame.loadFromFile("resources/frame.png");
@@ -283,6 +439,71 @@ void CGame::CheckCollisionWithPuddles()
 			puddle->PlaySound();
 			puddle->SetVisited();
 		}
+	}
+}
+
+void CGame::CheckCollisionWithScrolls()
+{
+	for (size_t i = 0; i < m_scrolls.size(); ++i)
+	{
+		if (m_player.GetRect().intersects(m_scrolls[i]->GetSprite().getGlobalBounds()))
+		{
+			m_scrolls.erase(m_scrolls.begin() + i);
+			m_player.SetNewMission();
+			m_miniGame.PlaySound();
+		}
+	}
+}
+
+void CGame::CheckCollisionWithFinish()
+{
+	if (m_player.GetRect().intersects(m_finish.rect) && !m_player.IsFinalState())
+	{
+		m_player.SetFinalState();
+		m_player.SetPlaceInFinal();
+		m_player.UpdateTotal(210 * 1 / m_player.GetPlaceInFinal());
+		m_textResult.setString("Вы заняли " + std::to_string(m_player.GetPlaceInFinal()) + " место\n");
+	}
+}
+
+void CGame::CheckCollisionWithElephantes(float time)
+{
+	for (auto elephant : m_elephants)
+	{
+		if (!(elephant->IsStop(m_player.GetPosition().y)))
+		{
+			elephant->Update(time);
+			elephant->SetPosition();
+		}
+
+		if (m_player.GetRect().intersects(elephant->GetRectBonus()) && elephant->IsShow())
+		{
+			elephant->SetShow();
+			m_player.InitClock();
+			m_player.SetDelay();
+			m_player.UpdateTotal(100);
+		}
+
+	}
+}
+
+void CGame::CheckCollisionWithCats(float time)
+{
+	for (auto cat : m_cats)
+	{
+		if (!(cat->IsStop(m_player.GetPosition().y)))
+		{
+			cat->Update(time);
+			cat->SetPosition();
+		}
+
+		if (m_player.GetRect().intersects(cat->GetRectBonus()) && cat->IsShow())
+		{
+			cat->SetShow();
+			m_player.InitClock();
+			m_player.SetFreeze();
+		}
+
 	}
 }
 
@@ -503,217 +724,16 @@ void CGame::DrawGameMini(sf::RenderWindow &window)
 void CGame::Update(float time)
 {
 
-	if (!m_menu.IsOpen())
+	if (!m_menu.IsOpen() && !m_player.IsNewMission())
 	{
-
-		if (!m_player.IsNewMission())
-		{
-
-			UpdatePlayer(time);
-
-
-			for (auto enemy : m_enemies)
-			{
-				enemy->Update(time);
-
-				if (m_player.GetRect().intersects(enemy->GetHero().getGlobalBounds()))
-				{
-					if (m_player.GetOffset().x < 0)
-					{
-						m_player.UpdatePosition(enemy->GetPosition().x + 40);
-						enemy->UpdatePosition(-0.1f * time);
-					}
-					if (m_player.GetOffset().x > 0)
-					{
-						m_player.UpdatePosition(enemy->GetPosition().x - 40);
-						enemy->UpdatePosition(0.1f * time);
-					}
-
-
-					if (m_player.GetOffset().x == 0)
-					{
-						if (!enemy->Check(0.1f * time))
-						{
-							enemy->Check(-0.1f * time);
-						}
-
-					}
-				}
-
-
-				if (m_finish.rect.intersects(enemy->GetHero().getGlobalBounds()) && !enemy->IsFinalState())
-				{
-					enemy->SetFinalState();
-					m_player.SetPlaceInFinal();
-
-				}
-
-
-				for (size_t i = 0; i < m_bonuses.size(); ++i)
-				{
-					if (enemy->GetRect().intersects(m_bonuses[i]->GetSprite().getGlobalBounds()))
-					{
-						m_bonuses.erase(m_bonuses.begin() + i);
-					}
-				}
-
-
-				for (auto elephant : m_elephants)
-				{
-					if ((enemy->GetRect().intersects(elephant->GetRectBonus()) && elephant->IsShow()) || enemy->GetRect().intersects(elephant->GetRect()))
-					{
-						enemy->SetProtection();
-					}
-				}
-
-				for (auto scroll : m_scrolls)
-				{
-					if (enemy->GetRect().intersects(scroll->GetSprite().getGlobalBounds()))
-					{
-						enemy->SetProtection();
-					}
-				}
-
-				for (auto cat : m_cats)
-				{
-					if ((enemy->GetRect().intersects(cat->GetRectBonus()) && cat->IsShow()) || enemy->GetRect().intersects(cat->GetRect()))
-					{
-						enemy->SetProtection();
-					}
-
-				}
-
-				enemy->SetPosition();
-			}
-
-
-			for (auto elephant : m_elephants)
-			{
-				if (!(elephant->IsStop(m_player.GetPosition().y)))
-				{
-					elephant->Update(time);
-					elephant->SetPosition();
-				}
-
-				if (m_player.GetRect().intersects(elephant->GetRectBonus()) && elephant->IsShow())
-				{
-					elephant->SetShow();
-					m_player.InitClock();
-					m_player.SetDelay();
-					m_player.UpdateTotal(100);
-				}
-
-			}
-
-
-			if (m_player.GetRect().intersects(m_finish.rect) && !m_player.IsFinalState())
-			{
-				m_player.SetFinalState();
-				m_player.SetPlaceInFinal();
-				m_player.UpdateTotal(210 * 1 / m_player.GetPlaceInFinal());
-				m_textResult.setString("Вы заняли " + std::to_string(m_player.GetPlaceInFinal()) + " место\n");
-			}
-
-			for (size_t i = 0; i < m_scrolls.size(); ++i)
-			{
-				if (m_player.GetRect().intersects(m_scrolls[i]->GetSprite().getGlobalBounds()))
-				{
-					m_scrolls.erase(m_scrolls.begin() + i);
-					m_player.SetNewMission();
-					m_miniGame.PlaySound();
-				}
-			}
-
-
-
-			for (auto cat : m_cats)
-			{
-				if (!(cat->IsStop(m_player.GetPosition().y)))
-				{
-					cat->Update(time);
-					cat->SetPosition();
-				}
-
-				if (m_player.GetRect().intersects(cat->GetRectBonus()) && cat->IsShow())
-				{
-					cat->SetShow();
-					m_player.InitClock();
-					m_player.SetFreeze();
-				}
-
-			}
-
-
-			CheckCollisionWithDonuts();
-
-
-			CheckCollisionWithPuddles();
-
-			m_player.SetPosition();
-			m_player.SetSpeed();
-			m_player.Freezing();
-
-
-			m_textResult.setPosition(180, m_player.GetPosition().y - 240);
-			
-			m_view.setCenter(340, m_player.GetPosition().y - 213);
-
-
-			m_frame.spriteFrame.setPosition(0, m_player.GetPosition().y - 470);
-			m_frame.text.setPosition(20, m_player.GetPosition().y - 460);
-			m_frame.text.setString("Очки: " + std::to_string(m_player.GetTotal()));
-			m_frame.spriteButton.setPosition(550, m_player.GetPosition().y - 460);
-		}
-		else
-		{
-			m_music.pause();
-			if (m_miniGame.IsNext())
-			{
-				if (m_miniGame.GetTimeDelay() != 10)
-				{
-					m_miniGame.SetString();
-
-					m_miniGame.m_player.Update(time);
-
-					CheckCollisionMini(m_miniGame.m_boxes, m_miniGame.m_player, time);
-					m_miniGame.m_player.sprite.setPosition(m_miniGame.m_player.position);
-
-					
-					size_t finishedBoxesCount = 0;
-					for (auto box : m_miniGame.m_boxes)
-					{
-						if (box->isStateFinal)
-						{
-							++finishedBoxesCount;
-						}
-					}
-
-					if (finishedBoxesCount == m_miniGame.m_boxes.size() || m_miniGame.GetTimePlay() > 90)
-					{
-						m_miniGame.SetTimeDelay();
-
-
-					}
-
-				}
-				else
-				{
-					std::string result = "";
-					if (m_miniGame.GetTimePlay() > 90)
-					{
-						result = "Вы проиграли - ваша скорость упадет\n";
-					}
-					else
-					{
-						result = "Вы выиграли - ваша скорость вырастет\n";
-					}
-					m_miniGame.SetText(result + "Вперед,в игру!");
-					m_miniGame.ChangeButton();
-				}
-			}
-		}
+		UpdateGame(time);
 	}
-	else
+	else if (m_player.IsNewMission())
+	{
+		m_music.pause();
+		UpdateGameMini(time);
+	}
+	else if (m_menu.IsOpen())
 	{
 		m_menu.Animation(time);
 	}
