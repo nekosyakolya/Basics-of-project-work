@@ -360,8 +360,8 @@ void CGame::CheckCollisionWithTurtles(float time)
 		if (m_player.GetRect().intersects(turtle->GetRectBonus()) && turtle->IsShow())
 		{
 			turtle->SetShow();
-			m_player.InitClock();
-			m_player.SetFreeze();
+			m_player.UpdateTotal(-m_player.GetTotal());
+
 		}
 
 	}
@@ -641,9 +641,9 @@ void CGame::DrawGame(sf::RenderWindow &window)
 		DrawElephants(window);
 		DrawCats(window);
 		DrawEnemies(window);
-		DrawPlayer(window);
 		window.draw(m_frame.spriteFrame);
 		window.draw(m_frame.text);
+		DrawPlayer(window);
 	}
 	else
 	{

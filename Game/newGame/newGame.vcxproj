@@ -179,7 +179,7 @@
     <ClCompile Include="level.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="MiniGame.cpp" />
-    <ClCompile Include="newGame.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Puddle.cpp" />
     <ClCompile Include="Scroll.cpp" />

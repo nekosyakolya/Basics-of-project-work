@@ -4546,7 +4546,7 @@
  <objectgroup name="cat">
   <object id="25" name="elephant" x="40" y="3799" width="40" height="40"/>
   <object id="29" name="turtle" x="40" y="4360" width="40" height="40"/>
-  <object id="30" name="turtleBonuses" x="200" y="4360" width="40" height="40"/>
+  <object id="30" name="turtleBonuses" x="350" y="4360" width="40" height="40"/>
  </objectgroup>
  <objectgroup name="blackCat">
   <object id="28" name="blackCat" x="600" y="1480" width="40" height="40"/>
