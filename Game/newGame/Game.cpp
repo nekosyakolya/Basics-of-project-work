@@ -118,119 +118,15 @@ void CGame::Initialisation()
 {
 	m_gameLevel = 1;
 	m_font.loadFromFile("resources/CyrilicOld.TTF");
-	m_text.setString("");
-	m_text.setFont(m_font);
-	m_text.setCharacterSize(32);
-	m_text.setFillColor(sf::Color::White);
-	m_text.setStyle(sf::Text::Bold);
-	m_text.setPosition(40, 20);
-
-
 
 	m_view.reset(sf::FloatRect(0, 0, 680, 500));
 
-	m_level.LoadFromFile(m_levelMap.find(m_gameLevel)->second);
-
-	Object hero = m_level.GetObject("player");
-	m_player.Init(m_level);
-
-	m_player.InitPlayer(sf::Vector2f(hero.rect.left, hero.rect.top));
-
-
-	std::vector<Object> bonusStartPos = m_level.GetObjects("bonus");
-
-	for (auto currBonus : bonusStartPos)
-	{
-		m_bonuses.push_back(std::shared_ptr<CDonut>(new CDonut(sf::Vector2f(currBonus.rect.left, currBonus.rect.top))));
-	}
-
-
-
-	std::vector<Object> enemyStartPos = m_level.GetObjects("enemy");
-	sf::Clock clock;
-	for (auto currEnemy : enemyStartPos)
-	{
-		float timeSpeed = static_cast<float>(clock.getElapsedTime().asMicroseconds());
-		clock.restart();
-		timeSpeed = timeSpeed / 10000000;
-		m_enemies.push_back(std::shared_ptr<CEnemy>(new CEnemy(sf::Vector2f(currEnemy.rect.left, currEnemy.rect.top), timeSpeed)));
-	}
-
-
-	for (auto enemy : m_enemies)
-	{
-		enemy->Init(m_level);
-	}
-
-
-
-	std::vector<Object> puddleStartPos = m_level.GetObjects("puddle");
-
-	for (auto currPuddle : puddleStartPos)
-	{
-		m_puddles.push_back(std::shared_ptr<CPuddle>(new CPuddle(sf::Vector2f(currPuddle.rect.left, currPuddle.rect.top))));
-	}
-
-
-	m_finish = m_level.GetObject("finish");
-
-
-
-	std::vector<Object> newMissionStart = m_level.GetObjects("newMission");
-
-	for (auto currBonus : newMissionStart)
-	{
-		m_scrolls.push_back(std::shared_ptr<CScroll>(new CScroll(sf::Vector2f(currBonus.rect.left, currBonus.rect.top))));
-	}
-
-
-
-	std::vector<Object> elephantStartPos = m_level.GetObjects("elephant");
-
-	for (auto currElephant : elephantStartPos)
-	{
-		m_elephants.push_back(std::shared_ptr<CElephant>(new CElephant(sf::Vector2f(currElephant.rect.left, currElephant.rect.top))));
-	}
-
-	for (auto currElephant : m_elephants)
-	{
-		currElephant->Init(m_level);
-	}
-
-
-	std::vector<Object> catStartPos = m_level.GetObjects("blackCat");
-	for (auto currCat : catStartPos)
-	{
-		m_cats.push_back(std::shared_ptr<CCat>(new CCat(sf::Vector2f(currCat.rect.left, currCat.rect.top))));
-	}
-
-	for (auto cat : m_cats)
-	{
-		cat->Init(m_level);
-	}
-
-
-
-	m_frame.textureFrame.loadFromFile("resources/frame.png");
-	m_frame.spriteFrame.setTexture(m_frame.textureFrame);
-	m_frame.spriteFrame.setPosition(0, m_player.GetPosition().y - 470);
-
-	m_frame.textureButton.loadFromFile("resources/frame-next.png");
-	m_frame.spriteButton.setTexture(m_frame.textureButton);
-	m_frame.spriteButton.setPosition(440, m_player.GetPosition().y - 460);
-
-	m_frame.text.setString("");
-	m_frame.text.setFont(m_font);
-	m_frame.text.setCharacterSize(24);
-	m_text.setFillColor(sf::Color::White);
-	m_text.setStyle(sf::Text::Bold);
-	m_text.setPosition(20, m_player.GetPosition().y - 460);
-
+	InitLevel();
+	InitFrame();
+	InitText();
 	m_music.openFromFile("resources/main.wav");
 	m_music.setVolume(10.5f);
 	m_music.setLoop(true);
-
-
 	m_miniGame.Init();
 
 }
@@ -253,6 +149,123 @@ void CGame::UpdatePlayer(float time)
 	m_player.Update(time);
 
 }
+
+void CGame::InitFrame()
+{
+	m_frame.textureFrame.loadFromFile("resources/frame.png");
+	m_frame.spriteFrame.setTexture(m_frame.textureFrame);
+	m_frame.spriteFrame.setPosition(0, m_player.GetPosition().y - 470);
+
+	m_frame.textureButton.loadFromFile("resources/frame-next.png");
+	m_frame.spriteButton.setTexture(m_frame.textureButton);
+	m_frame.spriteButton.setPosition(440, m_player.GetPosition().y - 460);
+
+	m_frame.text.setString("");
+	m_frame.text.setFont(m_font);
+	m_frame.text.setCharacterSize(24);
+}
+
+void CGame::InitText()
+{
+
+	m_textResult.setCharacterSize(32);
+	m_textResult.setString("");
+	m_textResult.setFont(m_font);
+	m_textResult.setFillColor(sf::Color::White);
+	m_textResult.setStyle(sf::Text::Bold);
+	m_textResult.setPosition(20, m_player.GetPosition().y - 460);
+}
+
+void CGame::InitPlayer()
+{
+
+	Object hero = m_level.GetObject("player");
+	m_player.Init(m_level);
+	m_player.InitPlayer(sf::Vector2f(hero.rect.left, hero.rect.top));
+
+}
+
+void CGame::InitBonuses()
+{
+	std::vector<Object> bonusStartPos = m_level.GetObjects("bonus");
+	for (auto currBonus : bonusStartPos)
+	{
+		m_bonuses.push_back(std::shared_ptr<CDonut>(new CDonut(sf::Vector2f(currBonus.rect.left, currBonus.rect.top))));
+	}
+
+	std::vector<Object> puddleStartPos = m_level.GetObjects("puddle");
+	for (auto currPuddle : puddleStartPos)
+	{
+		m_puddles.push_back(std::shared_ptr<CPuddle>(new CPuddle(sf::Vector2f(currPuddle.rect.left, currPuddle.rect.top))));
+	}
+
+
+	std::vector<Object> newMissionStart = m_level.GetObjects("newMission");
+	for (auto currBonus : newMissionStart)
+	{
+		m_scrolls.push_back(std::shared_ptr<CScroll>(new CScroll(sf::Vector2f(currBonus.rect.left, currBonus.rect.top))));
+	}
+}
+
+void CGame::InitEnemies()
+{
+	std::vector<Object> enemyStartPos = m_level.GetObjects("enemy");
+	sf::Clock clock;
+	for (auto currEnemy : enemyStartPos)
+	{
+		float timeSpeed = static_cast<float>(clock.getElapsedTime().asMicroseconds());
+		clock.restart();
+		timeSpeed = timeSpeed / 10000000;
+		m_enemies.push_back(std::shared_ptr<CEnemy>(new CEnemy(sf::Vector2f(currEnemy.rect.left, currEnemy.rect.top), timeSpeed)));
+	}
+	for (auto enemy : m_enemies)
+	{
+		enemy->Init(m_level);
+	}
+
+
+	std::vector<Object> elephantStartPos = m_level.GetObjects("elephant");
+	for (auto currElephant : elephantStartPos)
+	{
+		m_elephants.push_back(std::shared_ptr<CElephant>(new CElephant(sf::Vector2f(currElephant.rect.left, currElephant.rect.top))));
+	}
+	for (auto currElephant : m_elephants)
+	{
+		currElephant->Init(m_level);
+	}
+
+	std::vector<Object> catStartPos = m_level.GetObjects("blackCat");
+	for (auto currCat : catStartPos)
+	{
+		m_cats.push_back(std::shared_ptr<CCat>(new CCat(sf::Vector2f(currCat.rect.left, currCat.rect.top))));
+	}
+	for (auto cat : m_cats)
+	{
+		cat->Init(m_level);
+	}
+
+
+}
+
+void CGame::InitLevel()
+{
+	m_level.LoadFromFile(m_levelMap.find(m_gameLevel)->second);
+	InitPlayer();
+	InitBonuses();
+	InitEnemies();
+	m_finish = m_level.GetObject("finish");
+}
+
+void CGame::ClearLevel()
+{
+	m_bonuses.clear();
+	m_enemies.clear();
+	m_scrolls.clear();
+	m_puddles.clear();
+	m_cats.clear();
+	m_elephants.clear();
+}
+
 
 void CGame::CheckCollisionWithDonuts()
 {
@@ -434,7 +447,7 @@ void CGame::Update(float time)
 				m_player.SetFinalState();
 				m_player.SetPlaceInFinal();
 				m_player.UpdateTotal(210 * 1 / m_player.GetPlaceInFinal());
-				m_text.setString("Вы заняли " + std::to_string(m_player.GetPlaceInFinal()) + " место\n");
+				m_textResult.setString("Вы заняли " + std::to_string(m_player.GetPlaceInFinal()) + " место\n");
 			}
 
 			for (size_t i = 0; i < m_scrolls.size(); ++i)
@@ -477,7 +490,7 @@ void CGame::Update(float time)
 			m_player.Freezing();
 
 
-			m_text.setPosition(180, m_player.GetPosition().y - 240);
+			m_textResult.setPosition(180, m_player.GetPosition().y - 240);
 
 			m_view.setCenter(340, GetPlayer().GetPosition().y - 213);
 
@@ -602,23 +615,15 @@ void CGame::Display(sf::RenderWindow & window)
 
 			if (m_player.IsFinalState())
 			{
-				window.draw(m_text);
+				window.draw(m_textResult);
 				window.draw(m_frame.spriteButton);
 
 				if (sf::FloatRect(550, 15, 60, 60).contains(static_cast<sf::Vector2f>(sf::Mouse::getPosition(window))) &&
 					(sf::Mouse::isButtonPressed(sf::Mouse::Left)))
 				{
 					++m_gameLevel;
-					m_bonuses.clear();
-					m_enemies.clear();
-					m_scrolls.clear();
-					m_puddles.clear();
-					m_cats.clear();
-					m_elephants.clear();
-
-					m_level.LoadFromFile(m_levelMap.find(m_gameLevel)->second);
-					m_player.Initialisation();
-					//Init(player, level, bonuses, enemies, finish, missions, mission, menu, puddles, cats, blackCats);
+					ClearLevel();
+					InitLevel();
 
 				}
 

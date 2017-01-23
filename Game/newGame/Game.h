@@ -35,7 +35,6 @@ public:
 
 
 	void Update(float);
-
 	void Display(sf::RenderWindow &);
 
 	~CGame();
@@ -46,7 +45,7 @@ private:
 	CMiniGame m_miniGame;
 
 	sf::View m_view;
-	sf::Text m_text;
+	sf::Text m_textResult;
 	sf::Font m_font;
 	sf::Music m_music;
 	Frame m_frame;
@@ -59,7 +58,13 @@ private:
 	std::vector<std::shared_ptr<CElephant>> m_elephants;
 	std::vector<std::shared_ptr<CCat>> m_cats;
 
-
+	void InitFrame();
+	void InitText();
+	void InitPlayer();
+	void InitBonuses();
+	void InitEnemies();
+	void InitLevel();
+	void ClearLevel();
 
 	void CheckCollisionWithDonuts();
 	void CheckCollisionWithPuddles();
