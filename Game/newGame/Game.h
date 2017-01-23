@@ -30,6 +30,8 @@ private:
 	CPlayer m_player;
 	sf::View m_view;
 	
+
+	Object m_finish;
 	std::vector<std::shared_ptr<CDonut>> m_bonuses;
 	std::vector<std::shared_ptr<CEnemy>> m_enemies;
 	std::vector<std::shared_ptr<CPuddle>> m_puddles;

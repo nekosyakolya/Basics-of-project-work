@@ -54,6 +54,10 @@ void CGame::Initialisation()
 		m_puddles.push_back(std::shared_ptr<CPuddle>(new CPuddle(sf::Vector2f(currPuddle.rect.left, currPuddle.rect.top))));
 	}
 
+
+	m_finish = m_level.GetObject("finish");
+
+
 }
 
 
@@ -162,6 +166,14 @@ void CGame::Update(float time)
 		}
 
 
+		if (m_finish.rect.intersects(enemy->GetHero().getGlobalBounds()) && !enemy->IsFinalState())
+		{
+			enemy->SetFinalState();
+			m_player.SetPlaceInFinal();
+
+		}
+
+
 		for (size_t i = 0; i < m_bonuses.size(); ++i)
 		{
 			if (enemy->GetRect().intersects(m_bonuses[i]->GetSprite().getGlobalBounds()))
@@ -172,6 +184,16 @@ void CGame::Update(float time)
 
 		enemy->SetPosition();
 	}
+
+
+	if (m_player.GetRect().intersects(m_finish.rect) && !m_player.IsFinalState())
+	{
+		m_player.SetFinalState();
+		m_player.SetPlaceInFinal();
+		m_player.UpdateTotal(210 * 1 / m_player.GetPlaceInFinal());
+		//text.setString("Вы заняли " + std::to_string(m_player.GetPlaceInFinal()) + " место\n");
+	}
+
 
 
 	CheckCollisionWithDonuts();
