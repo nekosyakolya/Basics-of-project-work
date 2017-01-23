@@ -58,7 +58,7 @@ public:
 	Level GetMap()const;
 	Player m_player;
 	std::vector<std::shared_ptr<Box>> m_boxes;
-
+	void CheckCollision(float time);
 	void Init();
 	void SetString();
 	sf::Text GetText()const;
@@ -90,6 +90,10 @@ private:
 	Object m_hero;
 
 	unsigned m_time;
+
+	bool hasCollisionWithBox(const size_t &boxNo, const sf::Vector2f &offset);
+	void CheckObjects(const size_t &boxNo, const sf::Vector2f &offset);
+	void ChangePosition(Box &box, const sf::Vector2f &offset);
 
 	void UpdateTime();
 	sf::Clock m_gameTimeClock;

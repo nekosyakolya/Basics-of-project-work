@@ -17,6 +17,48 @@ CMiniGame::~CMiniGame()
 {
 }
 
+void CMiniGame::CheckCollision(float time)
+{
+	sf::Vector2f offset;
+	for (size_t i = 0; i < m_boxes.size(); ++i)
+	{
+		if (m_player.GetRect().intersects(m_boxes[i]->sprite.getGlobalBounds()))
+		{
+			m_player.offset.x *= time;
+			m_player.offset.y *= time;
+			if (m_player.offset.x < 0)
+			{
+				offset.x = -SIZE_TILE;
+				offset.y = 0;
+			}
+			if (m_player.offset.x > 0)
+			{
+				offset.x = SIZE_TILE;
+				offset.y = 0;
+			}
+			if (m_player.offset.y > 0)
+			{
+
+				offset.x = 0;
+				offset.y = SIZE_TILE;
+			}
+
+			if (m_player.offset.y < 0)
+			{
+				offset.x = 0;
+				offset.y = -SIZE_TILE;
+			}
+			CheckObjects(i, offset);
+		}
+
+
+		auto positionSprite = (m_boxes[i]->isStateFinal) ? sf::Vector2f(0, 116) : sf::Vector2f(0, 58);
+
+		m_boxes[i]->sprite.setTextureRect(sf::IntRect(static_cast<int>(positionSprite.x), static_cast<int>(positionSprite.y), 58, 58));
+
+	}
+}
+
 void CMiniGame::Init()
 {
 	m_level = 1;
@@ -116,6 +158,63 @@ void CMiniGame::ChangeButton()
 	m_textureButton.loadFromFile("resources/next.png");
 	m_spriteButton.setTexture(m_textureButton);
 
+}
+
+bool CMiniGame::hasCollisionWithBox(const size_t & boxNo, const sf::Vector2f &offset)
+{
+	bool isCollision = false;
+	m_boxes[boxNo]->sprite.setPosition(m_boxes[boxNo]->sprite.getPosition().x + offset.x, m_boxes[boxNo]->sprite.getPosition().y + offset.y);
+	for (size_t j = 0; j < m_boxes.size(); ++j)
+	{
+		auto &box1 = m_boxes[boxNo];
+		auto &box2 = m_boxes[j];
+		if (m_boxes[boxNo]->sprite.getPosition() == m_boxes[j]->sprite.getPosition() && (&box1 != &box2))
+		{
+			ChangePosition(*(m_boxes[boxNo]), offset);
+			isCollision = true;
+		}
+	}
+	return isCollision;
+}
+
+void CMiniGame::CheckObjects(const size_t & boxNo, const sf::Vector2f &offset)
+{
+	bool isCollision = hasCollisionWithBox(boxNo, offset);
+
+	for (size_t j = 0; j < m_player.obj.size(); ++j)
+	{
+		auto &solidObject = m_player.obj[j];
+
+		if ((solidObject.rect.intersects((*m_boxes[boxNo]).sprite.getGlobalBounds())) && (solidObject.name == "collision"))
+		{
+			ChangePosition(*(m_boxes[boxNo]), offset);
+			isCollision = true;
+			break;
+		}
+
+		if ((solidObject.rect.intersects((*m_boxes[boxNo]).sprite.getGlobalBounds())) && (solidObject.name == "goal"))
+		{
+
+			if (!m_boxes[boxNo]->isStateFinal)
+			{
+				m_boxes[boxNo]->isStateFinal = true;
+			}
+
+			isCollision = true;
+		}
+	}
+	if (!isCollision && m_boxes[boxNo]->isStateFinal)
+	{
+		m_boxes[boxNo]->isStateFinal = false;
+	}
+}
+
+void CMiniGame::ChangePosition(Box & box, const sf::Vector2f & offset)
+{
+	m_player.position.x -= m_player.offset.x;
+	m_player.position.y -= m_player.offset.y;
+	m_player.direction = PlayerDirection::STAY;
+	box.sprite.setPosition(box.sprite.getPosition().x + (-offset.x), box.sprite.getPosition().y + (-offset.y));
 }
 
 void CMiniGame::UpdateTime()

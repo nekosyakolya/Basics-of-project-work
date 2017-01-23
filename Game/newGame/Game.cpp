@@ -7,113 +7,6 @@ CGame::CGame()
 
 }
 
-
-
-void ChangePosition(Box &box, Player & player, const sf::Vector2f &offset)
-{
-	player.position.x -= player.offset.x;
-	player.position.y -= player.offset.y;
-	player.direction = PlayerDirection::STAY;
-	box.sprite.setPosition(box.sprite.getPosition().x + (-offset.x), box.sprite.getPosition().y + (-offset.y));
-}
-
-// TODO: pass reference to Box instead of boxNo
-bool hasCollisionWithBox(std::vector<std::shared_ptr<Box>> &boxes, Player & player, const size_t &boxNo, const sf::Vector2f &offset)
-{
-	bool isCollision = false;
-	boxes[boxNo]->sprite.setPosition(boxes[boxNo]->sprite.getPosition().x + offset.x, boxes[boxNo]->sprite.getPosition().y + offset.y);
-	for (size_t j = 0; j < boxes.size(); ++j)
-	{
-		auto &box1 = boxes[boxNo];
-		auto &box2 = boxes[j];
-		if (boxes[boxNo]->sprite.getPosition() == boxes[j]->sprite.getPosition() && (&box1 != &box2))
-		{
-			ChangePosition(*(boxes[boxNo]), player, offset);
-			isCollision = true;
-		}
-	}
-	return isCollision;
-}
-
-
-
-// TODO: pass reference to Box instead of boxNo
-void CheckObjects(std::vector<std::shared_ptr<Box>> &boxes, Player & player, const size_t &boxNo, const sf::Vector2f &offset)
-{
-	bool isCollision = hasCollisionWithBox(boxes, player, boxNo, offset);
-
-	for (size_t j = 0; j < player.obj.size(); ++j)
-	{
-		auto &solidObject = player.obj[j];
-
-		if ((solidObject.rect.intersects((*boxes[boxNo]).sprite.getGlobalBounds())) && (solidObject.name == "collision"))
-		{
-			ChangePosition(*(boxes[boxNo]), player, offset);
-			isCollision = true;
-			break;
-		}
-
-		if ((solidObject.rect.intersects((*boxes[boxNo]).sprite.getGlobalBounds())) && (solidObject.name == "goal"))
-		{
-
-			if (!boxes[boxNo]->isStateFinal)
-			{
-				boxes[boxNo]->isStateFinal = true;
-			}
-
-			isCollision = true;
-		}
-	}
-	if (!isCollision && boxes[boxNo]->isStateFinal)
-	{
-		boxes[boxNo]->isStateFinal = false;
-	}
-}
-
-void CheckCollisionMini(std::vector<std::shared_ptr<Box>> &boxes, Player & player, float time)
-{
-	sf::Vector2f offset;
-	for (size_t i = 0; i < boxes.size(); ++i)
-	{
-		if (player.GetRect().intersects(boxes[i]->sprite.getGlobalBounds()))
-		{
-			player.offset.x *= time;
-			player.offset.y *= time;
-			if (player.offset.x < 0)
-			{
-				offset.x = -SIZE_TILE;
-				offset.y = 0;
-			}
-			if (player.offset.x > 0)
-			{
-				offset.x = SIZE_TILE;
-				offset.y = 0;
-			}
-			if (player.offset.y > 0)
-			{
-
-				offset.x = 0;
-				offset.y = SIZE_TILE;
-			}
-
-			if (player.offset.y < 0)
-			{
-				offset.x = 0;
-				offset.y = -SIZE_TILE;
-			}
-			CheckObjects(boxes, player, i, offset);
-		}
-
-
-		auto positionSprite = (boxes[i]->isStateFinal) ? sf::Vector2f(0, 116) : sf::Vector2f(0, 58);
-
-		boxes[i]->sprite.setTextureRect(sf::IntRect(static_cast<int>(positionSprite.x), static_cast<int>(positionSprite.y), 58, 58));
-
-	}
-}
-
-
-
 void CGame::Initialisation()
 {
 	m_gameLevel = 1;
@@ -193,7 +86,7 @@ void CGame::UpdateGameMini(float time)
 
 			m_miniGame.m_player.Update(time);
 
-			CheckCollisionMini(m_miniGame.m_boxes, m_miniGame.m_player, time);
+			m_miniGame.CheckCollision(time);
 			m_miniGame.m_player.sprite.setPosition(m_miniGame.m_player.position);
 
 
@@ -502,7 +395,8 @@ void CGame::CheckCollisionBetweenEnemies(CEnemy * enemy)
 {
 	for (auto elephant : m_elephants)
 	{
-		if ((enemy->GetRect().intersects(elephant->GetRectBonus()) && elephant->IsShow()) || enemy->GetRect().intersects(elephant->GetRect()))
+		if ((enemy->GetRect().intersects(elephant->GetRectBonus()) && elephant->IsShow())
+			|| enemy->GetRect().intersects(elephant->GetRect()))
 		{
 			enemy->SetProtection();
 		}
@@ -614,6 +508,41 @@ void CGame::DrawPlayer(sf::RenderWindow &window)
 
 }
 
+void CGame::DrawEndOfMiniGame(sf::RenderWindow &window)
+{
+	m_view.setCenter(window.getSize().x / 2.0f + 5, window.getSize().y / 2.0f);
+	window.setView(m_view);
+
+	window.clear(sf::Color::White);
+
+	window.draw(m_miniGame.GetSprite());
+
+	window.draw(m_miniGame.GetTextMission());
+
+	window.draw(m_miniGame.GetSpriteMission());
+
+	if (sf::IntRect(270, 330, 151, 61).contains(sf::Mouse::getPosition(window)) &&
+		(sf::Mouse::isButtonPressed(sf::Mouse::Left)))
+	{
+		m_player.SetNewMission();
+
+		if (m_miniGame.GetTimePlay() > 90)
+		{
+			m_player.ChangePosition();
+			m_player.UpdateTotal(-5);
+		}
+		else
+		{
+			m_player.UpdateDelta();
+			m_player.UpdateTotal(50);
+		}
+		m_miniGame.LevelUp();
+		m_miniGame.Initialisation();
+		m_miniGame.StopSound();
+		m_music.play();
+	}
+}
+
 void CGame::DrawMenu(sf::RenderWindow &window)
 {
 	window.draw(m_menu.GetSprite());
@@ -694,37 +623,7 @@ void CGame::DrawGameMini(sf::RenderWindow &window)
 		}
 		else
 		{
-			m_view.setCenter(window.getSize().x / 2.0f + 5, window.getSize().y / 2.0f);
-			window.setView(m_view);
-
-			window.clear(sf::Color::White);
-
-			window.draw(m_miniGame.GetSprite());
-
-			window.draw(m_miniGame.GetTextMission());
-
-			window.draw(m_miniGame.GetSpriteMission());
-
-			if (sf::IntRect(270, 330, 151, 61).contains(sf::Mouse::getPosition(window)) &&
-				(sf::Mouse::isButtonPressed(sf::Mouse::Left)))
-			{
-				m_player.SetNewMission();
-
-				if (m_miniGame.GetTimePlay() > 90)
-				{
-					m_player.ChangePosition();
-					m_player.UpdateTotal(-5);
-				}
-				else
-				{
-					m_player.UpdateDelta();
-					m_player.UpdateTotal(50);
-				}
-				m_miniGame.LevelUp();
-				m_miniGame.Initialisation();
-				m_miniGame.StopSound();
-				m_music.play();
-			}
+			DrawEndOfMiniGame(window);
 		}
 	}
 	else

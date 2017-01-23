@@ -85,6 +85,7 @@ private:
 	void DrawElephants(sf::RenderWindow &)const;
 	void DrawCats(sf::RenderWindow &)const;
 	void DrawPlayer(sf::RenderWindow &);
+	void DrawEndOfMiniGame(sf::RenderWindow &);
 
 	void DrawMenu(sf::RenderWindow &);
 	void DrawMenuMini(sf::RenderWindow &);
