@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include "Player.h"
+#include "const.h"
 
 
 using namespace sf;
 
 
 Player::Player(const Vector2f & position) :
-	position(Vector2f(position.x + 29, position.y + 29)),
+	position(Vector2f(position.x + (SIZE_TILE / 2), position.y + (SIZE_TILE / 2))),
 	currentFrame(0.0),
 	direction(Direction::STAY)
 {
@@ -15,10 +16,10 @@ Player::Player(const Vector2f & position) :
 	image.loadFromFile("recources/player1.png");
 	texture.loadFromImage(image);
 
-	sprite.setOrigin(18, 29);
+	sprite.setOrigin((WIDTH_PLAYER / 2), (SIZE_TILE / 2));
 	sprite.setTexture(texture);
 
-	sprite.setTextureRect(IntRect(0, 0, 36, 58));
+	sprite.setTextureRect(IntRect(0, 0, WIDTH_PLAYER, SIZE_TILE));
 
 	sprite.setPosition(position);
 }
@@ -47,9 +48,18 @@ void Player::GetDirection()
 
 }
 
+
+void Player::CheckCentre(const float &value)
+{
+	if (static_cast<int>(value - (SIZE_TILE / 2)) % SIZE_TILE == 0)
+	{
+		direction = Direction::STAY;
+	}
+}
+
 void Player::Update(float time)
 {
-	currentFrame += 0.005 * time;
+	currentFrame += 0.005f * time;
 	if (direction == Direction::STAY)
 	{
 		GetDirection();
@@ -67,29 +77,28 @@ void Player::Update(float time)
 	switch (direction)
 	{
 	case Direction::RIGHT:
-		offset.x = 0.1;
+		offset.x = 0.1f;
 		offset.y = 0;
-		sprite.setTextureRect(IntRect(36, 58 * int(currentFrame), 36, 58));
+		sprite.setTextureRect(IntRect(WIDTH_PLAYER, SIZE_TILE * static_cast<int>(currentFrame), WIDTH_PLAYER, SIZE_TILE));
 		break;
 	case Direction::LEFT:
-		offset.x = -0.1;
+		offset.x = -0.1f;
 		offset.y = 0;
-		sprite.setTextureRect(IntRect(108, 58 * int(currentFrame), 36, 58));
+		sprite.setTextureRect(IntRect(WIDTH_PLAYER * 3, SIZE_TILE * static_cast<int>(currentFrame), WIDTH_PLAYER, SIZE_TILE));
 		break;
 	case Direction::UP:
-		offset.y = -0.1;
+		offset.y = -0.1f;
 		offset.x = 0;
-		sprite.setTextureRect(IntRect(72, 58 * int(currentFrame), 36, 58));
+		sprite.setTextureRect(IntRect(WIDTH_PLAYER * 2, SIZE_TILE * static_cast<int>(currentFrame), WIDTH_PLAYER, SIZE_TILE));
 		break;
 	case Direction::DOWN:
-		offset.y = 0.1;
+		offset.y = 0.1f;
 		offset.x = 0;
-		sprite.setTextureRect(IntRect(0, 58 * int(currentFrame), 36, 58));
+		sprite.setTextureRect(IntRect(0, SIZE_TILE * static_cast<int>(currentFrame), WIDTH_PLAYER, SIZE_TILE));
 		break;
 	case Direction::STAY:
 		offset.x = 0;
 		offset.y = 0;
-		//sprite.setTextureRect(IntRect(0, 0, 36, 58));
 		break;
 	default:
 		break;
@@ -97,21 +106,13 @@ void Player::Update(float time)
 	if (offset.x != 0)
 	{
 		position.x += offset.x * time;
-		if (static_cast<int>(position.x - 29) % 58 == 0)
-		{
-			direction = Direction::STAY;
-		}
-		//проверка коллизии
+		CheckCentre(position.x);
 		CheckCollision(offset.x, 0);
 	}
 	if (offset.y != 0)
 	{
 		position.y += offset.y * time;
-		if (static_cast<int>(position.y - 29) % 58 == 0)
-		{
-			direction = Direction::STAY;
-		}
-		//проверка коллизии
+		CheckCentre(position.y);
 		CheckCollision(0, offset.y);
 	}
 }
@@ -123,7 +124,7 @@ void Player::InitPlayer(Level &level)
 
 sf::FloatRect Player::GetRect()
 {
-	return FloatRect(position.x- 29, position.y- 29, 57, 57/*58-не але иногда.57 это костыль ,я подозреваю*/);
+	return FloatRect(position.x - (SIZE_TILE / 2), position.y - (SIZE_TILE / 2), 57, 57);
 }
 
 void Player::CheckCollision(const float & dx, const float & dy)
@@ -133,21 +134,21 @@ void Player::CheckCollision(const float & dx, const float & dy)
 		if (GetRect().intersects(obj[i].rect) && (obj[i].name == "collision"))
 		{
 			direction = Direction::STAY;
-			if (dy > 0)//вниз
+			if (dy > 0)
 			{
-				position.y = obj[i].rect.top - 29;
+				position.y = obj[i].rect.top - (SIZE_TILE / 2);
 			}
-			if (dy < 0)//вверх
+			if (dy < 0)
 			{
-				position.y = obj[i].rect.top + obj[i].rect.height + 29;
+				position.y = obj[i].rect.top + obj[i].rect.height + (SIZE_TILE / 2);
 			}
-			if (dx > 0)//вправо
+			if (dx > 0)
 			{
-				position.x = obj[i].rect.left - 29;
+				position.x = obj[i].rect.left - (SIZE_TILE / 2);
 			}
-			if (dx < 0)//влево
+			if (dx < 0)
 			{
-				position.x = obj[i].rect.left + obj[i].rect.width + 29;
+				position.x = obj[i].rect.left + obj[i].rect.width + (SIZE_TILE / 2);
 			}
 		}
 	}

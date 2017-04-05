@@ -28,5 +28,6 @@ struct Player
 	void InitPlayer(Level &level);
 	sf::FloatRect GetRect();
 	void CheckCollision(const float &dx, const float &dy);
+	void CheckCentre(const float &dx);
 };
 

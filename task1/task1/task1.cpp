@@ -13,7 +13,7 @@
 
 using namespace std;
 
-static const float G = 9.8f;
+static const float GRAVITY = 9.8f;
 
 void PrintCurrentState(const float &, const float &);
 void DisplayStates(const float &);
@@ -22,7 +22,7 @@ bool IsValidHeight(int);
 
 void PrintCurrentState(const float &time, const float &v0)
 {
-	double currHeight = v0 * time - 0.5 * G * time * time;
+	double currHeight = v0 * time - 0.5 * GRAVITY * time * time;
 	if (currHeight >= 0)
 	{
 		cout << "t=" << fixed << setprecision(6) << time << ", h=" << fixed << setprecision(6) << currHeight << "\n";
@@ -33,7 +33,7 @@ void DisplayStates(const float &timeReachMaxHeight)
 {
 	cout << "Time point when height is at maximum = " << fixed << setprecision(6) << timeReachMaxHeight << "\n";
 	bool printedMaxState = false;
-	float v0 = G * timeReachMaxHeight;
+	float v0 = GRAVITY * timeReachMaxHeight;
 	for (float currTime = 0; currTime < timeReachMaxHeight * 2; currTime += 0.1f)
 	{
 		if (currTime > timeReachMaxHeight && !printedMaxState)
@@ -53,7 +53,7 @@ bool IsValidHeight(int heightJump)
 
 int GetHeightJump()
 {
-	int heightJump;
+	int heightJump = 0;
 	do
 	{
 		cout << "Height jump: ";
@@ -70,13 +70,14 @@ int GetHeightJump()
 		}
 	} 
 	while (!IsValidHeight(heightJump));
+
 	return heightJump;
 }
 
 int main()
 {
 	int heightJump = GetHeightJump();
-	float timeReachMaxHeight = sqrt(heightJump * 2 / G);
+	float timeReachMaxHeight = sqrt(heightJump * 2 / GRAVITY);
 
 	DisplayStates(timeReachMaxHeight);
 	return EXIT_SUCCESS;

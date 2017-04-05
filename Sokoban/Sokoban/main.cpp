@@ -1,16 +1,15 @@
 #include "stdafx.h"
 #include <SFML/Audio.hpp>
-#include <string>
-#include <sstream>
 
 #include "level.h"
 
 #include "Box.h"
 #include "Player.h"
 
+#include "const.h"
+
 using namespace sf;
 using namespace std;
-
 
 void HandleEvents(RenderWindow &window)
 {
@@ -25,108 +24,100 @@ void HandleEvents(RenderWindow &window)
 	}
 }
 
-void CheckBox(std::vector<Box*> &boxes, Player & player, bool &isCollision, const size_t &i, const sf::Vector2f &offset)
+
+void ChangePosition(Box &box, Player & player, const sf::Vector2f &offset)
 {
-	boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x + offset.x, boxes[i]->sprite.getPosition().y + offset.y);
+	player.position.x -= player.offset.x;
+	player.position.y -= player.offset.y;
+	player.direction = Direction::STAY;
+	box.sprite.setPosition(box.sprite.getPosition().x + (-offset.x), box.sprite.getPosition().y + (-offset.y));
+}
+
+// TODO: pass reference to Box instead of boxNo
+bool hasCollisionWithBox(std::vector<Box*> &boxes, Player & player, const size_t &boxNo, const sf::Vector2f &offset)
+{
+	bool isCollision = false;
+	boxes[boxNo]->sprite.setPosition(boxes[boxNo]->sprite.getPosition().x + offset.x, boxes[boxNo]->sprite.getPosition().y + offset.y);
 	for (size_t j = 0; j < boxes.size(); ++j)
 	{
-		if (boxes[i]->sprite.getPosition() == boxes[j]->sprite.getPosition() && (i != j))
+		auto &box1 = boxes[boxNo];
+		auto &box2 = boxes[j];
+		if (boxes[boxNo]->sprite.getPosition() == boxes[j]->sprite.getPosition() && (&box1 != &box2))
 		{
-			player.position.x -= player.offset.x;
-			player.position.y -= player.offset.y;
-			player.direction = Direction::STAY;
-			boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x + (-offset.x), boxes[i]->sprite.getPosition().y + (-offset.y));
+			ChangePosition(*(boxes[boxNo]), player, offset);
 			isCollision = true;
 		}
 	}
+	return isCollision;
 }
 
 
 
-
-void CheckObjects(std::vector<Box*> &boxes, Player & player, bool &isCollision, const size_t &i, const sf::Vector2f &offset)
+// TODO: pass reference to Box instead of boxNo
+void CheckObjects(std::vector<Box*> &boxes, Player & player, const size_t &boxNo, const sf::Vector2f &offset)
 {
+	bool isCollision = hasCollisionWithBox(boxes, player, boxNo, offset);
+
 	for (size_t j = 0; j < player.obj.size(); ++j)
 	{
+		auto &solidObject = player.obj[j];
 
-		if ((player.obj[j].rect.intersects((*boxes[i]).sprite.getGlobalBounds())) && (player.obj[j].name == "collision"))
+		if ((solidObject.rect.intersects((*boxes[boxNo]).sprite.getGlobalBounds())) && (solidObject.name == "collision"))
 		{
-			player.position.x -= player.offset.x;
-			player.position.y -= player.offset.y;
-			player.direction = Direction::STAY;
-			boxes[i]->sprite.setPosition(boxes[i]->sprite.getPosition().x + (-offset.x), boxes[i]->sprite.getPosition().y + (-offset.y));
+			ChangePosition(*(boxes[boxNo]), player, offset);
 			isCollision = true;
-			break;//похоже на костыль
+			break;
 		}
 
-		if ((player.obj[j].rect.intersects((*boxes[i]).sprite.getGlobalBounds())) && (player.obj[j].name == "goal"))
+		if ((solidObject.rect.intersects((*boxes[boxNo]).sprite.getGlobalBounds())) && (solidObject.name == "goal"))
 		{
 
-			if (!boxes[i]->isStateFinal)
+			if (!boxes[boxNo]->isStateFinal)
 			{
-				boxes[i]->isStateFinal = true;
+				boxes[boxNo]->isStateFinal = true;
 			}
 
 			isCollision = true;
 		}
 	}
-	if (!isCollision && boxes[i]->isStateFinal)
+	if (!isCollision && boxes[boxNo]->isStateFinal)
 	{
-		boxes[i]->isStateFinal = false;
+		boxes[boxNo]->isStateFinal = false;
 	}
 }
 
 void CheckCollision(std::vector<Box*> &boxes, Player & player, float time)
 {
-	bool isCollision;
 	sf::Vector2f offset;
 	for (size_t i = 0; i < boxes.size(); ++i)
 	{
-		isCollision = false;
-		if (player.GetRect().intersects(boxes[i]->sprite.getGlobalBounds()) && player.offset.x < 0)
+		if (player.GetRect().intersects(boxes[i]->sprite.getGlobalBounds()))
 		{
-			offset.x = -58;
-			offset.y = 0;
 			player.offset.x *= time;
 			player.offset.y *= time;
-			CheckBox(boxes, player, isCollision, i, offset);
-			CheckObjects(boxes, player, isCollision, i, offset);
-			
-		}
+			if (player.offset.x < 0)
+			{
+				offset.x = -SIZE_TILE;
+				offset.y = 0;
+			}
+			if (player.offset.x > 0)
+			{
+				offset.x = SIZE_TILE;
+				offset.y = 0;
+			}
+			if (player.offset.y > 0)
+			{
 
+				offset.x = 0;
+				offset.y = SIZE_TILE;
+			}
 
-		if (player.GetRect().intersects(boxes[i]->sprite.getGlobalBounds()) && player.offset.x > 0)
-		{
-
-			offset.x = 58;
-			offset.y = 0;
-			player.offset.x *= time;
-			player.offset.y *= time;
-			CheckBox(boxes, player, isCollision, i, offset);
-			CheckObjects(boxes, player, isCollision, i, offset);
-		}
-
-
-		if (player.GetRect().intersects(boxes[i]->sprite.getGlobalBounds()) && player.offset.y > 0)
-		{
-
-			offset.x = 0;
-			offset.y = 58;
-			player.offset.x *= time;
-			player.offset.y *= time;
-			CheckBox(boxes, player, isCollision, i, offset);
-			CheckObjects(boxes, player, isCollision, i, offset);
-		}
-
-
-		if (player.GetRect().intersects(boxes[i]->sprite.getGlobalBounds()) && player.offset.y < 0)
-		{
-			offset.x = 0;
-			offset.y = -58;
-			player.offset.x *= time;
-			player.offset.y *= time;
-			CheckBox(boxes, player, isCollision, i, offset);
-			CheckObjects(boxes, player, isCollision, i, offset);
+			if (player.offset.y < 0)
+			{
+				offset.x = 0;
+				offset.y = -SIZE_TILE;
+			}
+			CheckObjects(boxes, player, i, offset);
 		}
 
 
@@ -134,6 +125,23 @@ void CheckCollision(std::vector<Box*> &boxes, Player & player, float time)
 
 		boxes[i]->sprite.setTextureRect(IntRect(static_cast<int>(positionSprite.x), static_cast<int>(positionSprite.y), 58, 58));
 
+	}
+}
+
+void DrawAndCheckBoxes(RenderWindow &window, std::vector<Box*> &boxes)
+{
+	size_t finishedBoxesCount = 0;
+	for (auto box : boxes)
+	{
+		window.draw(box->sprite);
+		if (box->isStateFinal)
+		{
+			++finishedBoxesCount;
+		}
+	}
+	if (finishedBoxesCount == boxes.size())
+	{
+		cout << "win" << endl;
 	}
 }
 
@@ -149,22 +157,8 @@ void Display(RenderWindow &window, Level &level, std::vector<Box*> &boxes, Playe
 	level.Draw(window);
 	
 
-	//
-	size_t k = 0;
-	for (auto box : boxes)
-	{
-		window.draw(box->sprite);
-		if (box->isStateFinal)
-		{
-			++k;
-		}
-	}
-	if (k == boxes.size())
-	{
-		cout << "win"<< endl;
-	}
+	DrawAndCheckBoxes(window, boxes);
 
-	//
 	window.draw(player.sprite);
 	window.display();
 }
@@ -174,7 +168,7 @@ void EnterGameLoop(RenderWindow &window, Level &level, std::vector<Box*> &boxes,
 	while (window.isOpen())
 	{
 
-		float time = clock.getElapsedTime().asMicroseconds(); //дать прошедшее время в микросекундах
+		float time = static_cast<float>(clock.getElapsedTime().asMicroseconds()); //дать прошедшее время в микросекундах
 		clock.restart(); //перезагружает время
 		time = time / 800; //скорость игры
 
@@ -193,6 +187,7 @@ int main()
 	{
 		return EXIT_FAILURE;
 	}
+
 	Clock clock;
 	ContextSettings settings;
 	settings.antialiasingLevel = 8;
@@ -217,6 +212,4 @@ int main()
 	EnterGameLoop(window, level, boxes, player, clock);
 	return EXIT_SUCCESS;
 }
-
-
 
